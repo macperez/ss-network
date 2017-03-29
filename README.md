@@ -10,7 +10,8 @@ y cómo construir el proyecto.
 * para Trading. Es una transcripción del programa que ya funciona en Matlab
 * pero reimplementado y hecho mucho más eficiente y escalable
 * Version 0.1
-* [Aprenda Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* PD. Este documento está desarrollado con Markdown! No se conforme
+* [Aprenda Markdown!!](https://bitbucket.org/tutorials/markdowndemo)
 
 ### Instalación DESARROLLO ###
 
