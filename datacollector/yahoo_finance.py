@@ -14,7 +14,7 @@ import urllib.request as req
 import pytz
 import pandas as pd
 from bs4 import BeautifulSoup
-
+from connectors import Connector
 
 from pandas_datareader import DataReader
 
@@ -24,7 +24,7 @@ INDEX_SITES = {
 }
 
 
-class YahooConnector (object):
+class YahooConnector (Connector):
     """
     A base storage class, providing some default behaviors that all other
     storage systems can inherit or override, as necessary.
@@ -36,7 +36,6 @@ class YahooConnector (object):
          self.start_date = start_date
          self.end_date = end_date
          self.step = step
-
 
     def scrape_list_IBEX(self):
         """
@@ -61,15 +60,14 @@ class YahooConnector (object):
         tickers = self.scrape_list_IBEX()
         data = DataReader(list(tickers.keys()), 'yahoo', self.start_date,
             self.end_date)
-        #close_df = data['Close']
-        type_data = data[type].iloc[::step]
+        type_data = data[type].iloc[::self.step]
         return type_data
 
 
 
 if __name__ == '__main__':
     START = dt.datetime(2017, 1, 1, 0, 0, 0, 0, pytz.utc)
-    END = dt.datetime.today().utcnow()
+    END = dt.datetime.today().utcnow()  
     yahoo = YahooConnector(START, END )
     df = yahoo.get_ibex35_data('Close')
-    print df
+    print (df)
