@@ -22,8 +22,6 @@ y cómo construir el proyecto.
 pip install -r requirements.txt
 ```
 
-
-
 ### Instalación PRODUCCIÓN ###
 
 (no aplica)

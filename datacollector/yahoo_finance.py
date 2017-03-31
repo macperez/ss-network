@@ -14,7 +14,7 @@ import urllib.request as req
 import pytz
 import pandas as pd
 from bs4 import BeautifulSoup
-from connectors import Connector
+from datacollector.connectors import Connector
 
 from pandas_datareader import DataReader
 
@@ -67,7 +67,7 @@ class YahooConnector (Connector):
 
 if __name__ == '__main__':
     START = dt.datetime(2017, 1, 1, 0, 0, 0, 0, pytz.utc)
-    END = dt.datetime.today().utcnow()  
+    END = dt.datetime.today().utcnow()
     yahoo = YahooConnector(START, END )
     df = yahoo.get_ibex35_data('Close')
     print (df)
