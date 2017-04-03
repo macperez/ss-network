@@ -12,3 +12,4 @@ tables >= 3.3.0
 yahoo-finance >= 1.4.0
 beautifulsoup4 >= 4.5.3
 networkx >= 1.11
+matplotlib >= 2.0.0
