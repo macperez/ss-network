@@ -1,4 +1,6 @@
 import unittest
+import datetime
+import pytz
 from datacollector.yahoo_finance import YahooConnector
 
 
@@ -13,5 +15,12 @@ class YahooFinanceTestCase(unittest.TestCase):
         self.assertEqual(len(components), 35)
 
     def test_get_IBEX_number_of_days(self):
-        
-        self.connector.get_data()
+        # Obtenemos un pandas dataframe con los datos de cierre
+        start_date = datetime.datetime(2017, 1, 1, 0, 0, 0, 0, pytz.utc)
+        end_date = datetime.datetime.today().utcnow()
+
+        closedata = self.connector.get_data()
+
+
+    # def tearDown(self):
+    #     self.connector.close()
