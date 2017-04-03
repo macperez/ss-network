@@ -15,11 +15,10 @@ from gui.nonrealplotting import paint
 def main():
     start_date = datetime.datetime(2017, 1, 1, 0, 0, 0, 0, pytz.utc)
     end_date = datetime.datetime.today().utcnow()
-    financial_connector = YahooConnector(start_date, end_date, step)
 
-    close_data_frame = financial_connector.get_ibex35_data('Close')
+    conn = YahooConnector('IBEX35')
+    close_data_frame = conn.get_data(start_date, end_date, 1, 'Close')
     print (close_data_frame)
-
 
     compute_network.STEP = 2
     compute_network.HISTORIAL_NUMBER_OF_ROWS = 14

@@ -4,18 +4,16 @@ The data coming from here come from Yahoo servers but they are not
 real-time data, but it provides convenient apis to fetch historical day-by-day
 stock data. They are useful for past-case studies.
 
-@author: Manuel Castro
-@email: desarrollo@institutoibt.come
+:author: Manuel Castro
+:email: desarrollo@institutoibt.come
 
 """
-
 import datetime as dt
 import urllib.request as req
 import pytz
 import pandas as pd
 from bs4 import BeautifulSoup
 from datacollector.connectors import Connector
-
 from pandas_datareader import DataReader
 
 
@@ -32,10 +30,8 @@ class YahooConnector (Connector):
     Use a scraping system in order to collect the index components.
     """
 
-    def __init__(self, start_date, end_date, step=1):
-         self.start_date = start_date
-         self.end_date = end_date
-         self.step = step
+    def __init__(self, indexname):
+        self.indexname = indexname
 
     def scrape_list_IBEX(self):
         """
@@ -56,11 +52,29 @@ class YahooConnector (Connector):
                 tickers[ticker] = name
         return tickers
 
-    def get_ibex35_data(self, type):
-        tickers = self.scrape_list_IBEX()
-        data = DataReader(list(tickers.keys()), 'yahoo', self.start_date,
-            self.end_date)
-        type_data = data[type].iloc[::self.step]
+    def get_components(self):
+        '''
+        Get the components of a given index
+        '''
+        if self.indexname == 'IBEX35':
+            components = self.scrape_list_IBEX()
+
+        return components
+
+    def get_data(self, startdate, enddate, step, type):
+        '''
+        Return the data of interest.
+        :param startdate: the initial date for the set
+        :param enddate: the final date for the set
+        :param step: the minimal amount of time. For yahoo api is one day. So
+            step is the multiple of this unit.
+        :param type: the final date for the set
+
+        '''
+        tickers = self.get_components()
+        data = DataReader(list(tickers.keys()), 'yahoo', startdate,
+            enddate)
+        type_data = data[type].iloc[::step]
         return type_data
 
 
