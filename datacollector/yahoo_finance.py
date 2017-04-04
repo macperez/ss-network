@@ -19,6 +19,7 @@ from pandas_datareader import DataReader
 
 INDEX_SITES = {
     'IBEX35': 'https://es.wikipedia.org/wiki/IBEX_35',
+    'DAX30' : 'https://es.wikipedia.org/wiki/DAX'
 }
 
 
@@ -47,7 +48,7 @@ class YahooConnector (Connector):
         for row in table.findAll('tr'):
             col = row.findAll('td')
             if len(col) > 0:
-                ticker = str(col[0].string.strip())
+                ticker = str(col[0].string.strip()) + '.MC'
                 name = str(col[1].string.strip())
                 tickers[ticker] = name
         return tickers
@@ -76,12 +77,3 @@ class YahooConnector (Connector):
             enddate)
         type_data = data[type].iloc[::step]
         return type_data
-
-
-
-if __name__ == '__main__':
-    START = dt.datetime(2017, 1, 1, 0, 0, 0, 0, pytz.utc)
-    END = dt.datetime.today().utcnow()
-    yahoo = YahooConnector(START, END )
-    df = yahoo.get_ibex35_data('Close')
-    print (df)
