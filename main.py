@@ -23,6 +23,7 @@ def main():
     compute_network.STEP = 2
     compute_network.HISTORIAL_NUMBER_OF_ROWS = 14
     matrix = compute_network.build(close_data_frame)
+    print(matrix)
 
     #paint(graphical_set_of_data)
 
