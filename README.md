@@ -21,6 +21,21 @@ y cómo construir el proyecto.
 ```
 pip install -r requirements.txt
 ```
+### Ejecución de los tests unitarios ###
+Para ejecutar los test se pueden ejecutar de la siguiente manera si es a nivel de clase
+
+```
+python -m unittest tests.test_datacollection.NetworkTestCase
+```
+
+O si es a nivel de paquete:  
+```
+python -m unittest tests
+```
+Hay también desglose, por supuesto a nivel de módulo o, en cambio, a nivel de método.
+El orden de especificación sería:
+paquete , módulo, clase, método
+
 
 ### Instalación PRODUCCIÓN ###
 
