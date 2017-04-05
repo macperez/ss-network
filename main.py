@@ -13,7 +13,7 @@ from datacollector.yahoo_finance import YahooConnector
 from gui.nonrealplotting import paint
 
 def main():
-    start_date = datetime.datetime(2000, 1, 1, 0, 0, 0, 0, pytz.utc)
+    start_date = datetime.datetime(2014, 1, 1, 0, 0, 0, 0, pytz.utc)
     end_date = datetime.datetime.today().utcnow()
 
     conn = YahooConnector('IBEX35')
@@ -23,7 +23,7 @@ def main():
 
     compute_network.STEP = 1
     compute_network.HISTORIAL_NUMBER_OF_ROWS = 15
-    matrix = compute_network.build(close_data_frame)
+    matrix = compute_network.build(close_data_frame, close_data_frame_IBEX)
     print(matrix)
 
     #paint(graphical_set_of_data)
