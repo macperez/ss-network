@@ -17,9 +17,11 @@ def main():
     end_date = datetime.datetime.today().utcnow()
 
     conn = YahooConnector('IBEX35')
-    close_data_frame = conn.get_data(start_date, end_date, 1, 'Close')
-    print (close_data_frame)
+    close_data_frame = conn.get_data('Close', start_date, end_date)
+    close_data_frame_IBEX = conn.get_component_data('^IBEX', 'Close',
+                                                    start_date, end_date)
 
+    import ipdb; ipdb.set_trace()
     compute_network.STEP = 2
     compute_network.HISTORIAL_NUMBER_OF_ROWS = 14
     matrix = compute_network.build(close_data_frame)

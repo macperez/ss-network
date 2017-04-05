@@ -8,9 +8,7 @@ stock data. They are useful for past-case studies.
 :email: desarrollo@institutoibt.come
 
 """
-import datetime as dt
 import urllib.request as req
-import pytz
 import pandas as pd
 from bs4 import BeautifulSoup
 from datacollector.connectors import Connector
@@ -53,6 +51,14 @@ class YahooConnector (Connector):
                 tickers[ticker] = name
         return tickers
 
+    def get_component_data(self, component_symbol, type, startdate, enddate):
+        '''
+        Get the data of a given component.
+        '''
+        data = DataReader(component_symbol, 'yahoo', startdate,
+            enddate)
+        return data[type]
+
     def get_components(self):
         '''
         Get the components of a given index
@@ -62,7 +68,7 @@ class YahooConnector (Connector):
 
         return components
 
-    def get_data(self, startdate, enddate, step, type):
+    def get_data(self, type, startdate, enddate):
         '''
         Return the data of interest.
         :param startdate: the initial date for the set
@@ -75,5 +81,4 @@ class YahooConnector (Connector):
         tickers = self.get_components()
         data = DataReader(list(tickers.keys()), 'yahoo', startdate,
             enddate)
-        type_data = data[type].iloc[::step]
-        return type_data
+        return data[type]
