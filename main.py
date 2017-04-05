@@ -21,12 +21,13 @@ def main():
     close_data_frame_IBEX = conn.get_component_data('^IBEX', 'Close',
                                                     start_date, end_date)
 
-    compute_network.STEP = 1
+    compute_network.STEP = 3
     compute_network.HISTORIAL_NUMBER_OF_ROWS = 15
-    matrix = compute_network.build(close_data_frame, close_data_frame_IBEX)
-    print(matrix)
+    correlation_means, correlation_std = compute_network.\
+        build(close_data_frame)
 
-    #paint(graphical_set_of_data)
+    paint(close_data_frame_IBEX, correlation_means, correlation_std)
+
 
 
 

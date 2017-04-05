@@ -12,8 +12,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-def paint (set_of_data):
-
-
-
-    pass
+def paint (close_data_frame_IBEX, correlation_means, correlation_std):
+    plt.subplot(3,1,1)
+    plt.title('Ibex35',fontsize = 28, color = '0.75', verticalalignment = 'baseline', horizontalalignment = 'center')
+    plt.plot(close_data_frame_IBEX)
+    plt.legend( ('Valor del Índice', 'Label2', 'Label3'), loc = 'upper left')
+    plt.subplot(3,1,2)
+    plt.plot(correlation_means)
+    plt.legend( ('Correlación media', 'Etiqueta2', 'Etiqueta3'), loc = 'upper left')
+    plt.subplot(3,1,3)
+    plt.plot(correlation_std)
+    plt.legend( ('Desviación de la correlación', 'Etiqueta2', 'Etiqueta3'), loc = 'upper left')
+    plt.show()
