@@ -16,5 +16,4 @@ def paint (set_of_data):
 
 
 
-
     pass
