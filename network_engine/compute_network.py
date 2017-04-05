@@ -11,9 +11,8 @@ def build (df_close):
     correlations = []
     correlation_means=[]
     correlation_std=[]
-#    dates = pd.date_range('20130101', periods=30)
-#    df_close = pd.DataFrame(np.random.randn(30,4), index=dates, columns=list('ABCD'))
-#    import ipdb; ipdb.set_trace()
+
+    import ipdb; ipdb.set_trace()
 
     for i in range(0, df_close.shape[0] - HISTORIAL_NUMBER_OF_ROWS):
         subdf = df_close.ix[i:i+HISTORIAL_NUMBER_OF_ROWS, :]
@@ -29,7 +28,7 @@ def build (df_close):
     plt.plot(correlation_std)
     plt.show()
 #    import ipdb; ipdb.set_trace()
-    return #correlation_means, correlation_std
+    # return correlation_means, correlation_std
 
 
 

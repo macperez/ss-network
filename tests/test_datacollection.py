@@ -29,9 +29,12 @@ class YahooFinanceTestCase(unittest.TestCase):
 
 class NetworkTestCase(unittest.TestCase):
 
-    def _test_total_correlation(self):
-        df = pd.DataFrame(np.random.randn(5, 3),
-                          index=['a', 'c', 'e', 'f', 'h'],
-                          columns=['one', 'two', 'three'])
+
+    def test_total_correlation(self):
+        dates = pd.date_range('20130101', periods=4)
+        df = pd.DataFrame(np.ones((4,3)),
+                          index=dates,
+                          columns=list('ABC'))
         # En el caso del IBEX tenemos que tener 35 componentes
-        self.assertEqual(len(components), 35)
+        print (df)
+        #self.assertEqual(len(components), 35)
