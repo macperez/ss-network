@@ -8,6 +8,13 @@ It is fairly enough for this purpose.
 
 """
 
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 def paint (set_of_data):
+
+
+
+
     pass

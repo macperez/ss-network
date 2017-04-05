@@ -4,7 +4,7 @@ import pytz
 import pandas as pd
 import numpy as np
 from datacollector.yahoo_finance import YahooConnector
-
+from network_engine import compute_network as cn
 
 class YahooFinanceTestCase(unittest.TestCase):
 
@@ -36,5 +36,9 @@ class NetworkTestCase(unittest.TestCase):
                           index=dates,
                           columns=list('ABC'))
         # En el caso del IBEX tenemos que tener 35 componentes
+        correlations_tuple = cn.build(df)
+        self.assertEqual(len(correlations_tuple[0], 2))
+
         print (df)
+
         #self.assertEqual(len(components), 35)
