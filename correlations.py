@@ -8,11 +8,19 @@ modules in order to get out the functionality
 """
 import datetime
 import pytz
+import argparse
 from network_engine import compute_network
 from datacollector.yahoo_finance import YahooConnector
 from gui.nonrealplotting import paint
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--paintnetwork", help="paint the network graph",
+                        action="store_true")
+    args = parser.parse_args()
+    if args.paintnetwork:
+        print("Network will be exported to a file")
+
     start_date = datetime.datetime(2014, 1, 1, 0, 0, 0, 0, pytz.utc)
     end_date = datetime.datetime.today().utcnow()
 
@@ -27,9 +35,6 @@ def main():
         build(close_data_frame)
 
     paint(close_data_frame_IBEX, correlation_means, correlation_std)
-
-
-
 
 if __name__== '__main__':
     main()

@@ -18,7 +18,6 @@ def build (df_close):
 
     end_index = df_close.shape[0] - HISTORIAL_NUMBER_OF_ROWS
 
-    import ipdb; ipdb.set_trace()
     if STEP > end_index:
         raise ValueError('The STEP parameter must be less than {0} days'\
             .format(end_index))
