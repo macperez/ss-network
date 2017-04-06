@@ -11,13 +11,15 @@ y cómo construir el proyecto.
 * pero reimplementado y hecho mucho más eficiente y escalable
 * Version 0.1
 * PD. Este documento está desarrollado con Markdown! No se conforme
-* [Aprenda Markdown!!](https://bitbucket.org/tutorials/markdowndemo)
+* [Aprenda Markdown!!](ht tps://bitbucket.org/tutorials/markdowndemo)
 
 ### Instalación DESARROLLO ###
 
 * Lo único que se necesita es un entorno Python 3.5
 * Con lo que está en requirements.txt
-
+* En este fichero está también la instalación para PEP-8 (estilo de codificación)
+  Si está trabajando con ATOM como editor de Python no olvide instalar el paquete
+  para avisar de los warnings de PEP-8 llamado linter-pep8
 ```
 pip install -r requirements.txt
 ```

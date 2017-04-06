@@ -3,6 +3,9 @@
 
 ###### Requirements without Version Specifiers ######
 pytz
+pep8 # For development purposes
+ipython
+ipdb
 
 ###### Requirements without Version Specifiers ######
 numpy >= 1.12.1

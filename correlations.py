@@ -13,6 +13,7 @@ from network_engine import compute_network
 from datacollector.yahoo_finance import YahooConnector
 from gui.nonrealplotting import paint
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--paintnetwork", help="paint the network graph",
@@ -36,5 +37,6 @@ def main():
 
     paint(close_data_frame_IBEX, correlation_means, correlation_std)
 
-if __name__== '__main__':
+
+if __name__ == '__main__':
     main()
