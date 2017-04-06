@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
-
+from networkx import *
 STEP = 1
 HISTORIAL_NUMBER_OF_ROWS = 15
 
@@ -18,7 +18,7 @@ def build (df_close):
 
     end_index = df_close.shape[0] - HISTORIAL_NUMBER_OF_ROWS
 
-    import ipdb; ipdb.set_trace()
+#    import ipdb; ipdb.set_trace()
     if STEP > end_index:
         raise ValueError('The STEP parameter must be less than {0} days'\
             .format(end_index))
@@ -28,11 +28,22 @@ def build (df_close):
         subdf = df_close.ix[i:i+HISTORIAL_NUMBER_OF_ROWS, :]
         graph=pd.DataFrame(np.diff(np.log(subdf.dropna(1)),axis=0))
         graph1=np.corrcoef([graph[col] for col in graph.columns])
+        inversegraph1=(1-np.absolute(graph1))*np.sign(graph1)
+        inversegraph2=nx.from_numpy_matrix(inversegraph1)
+        tree = nx.minimum_spanning_tree(inversegraph2)
+        tree1=nx.to_numpy_matrix(tree)
+        correlations.append(tree1)
+        correlation_means.append(np.mean(tree1))
+        correlation_std.append(np.std(tree1))
 
-        correlations.append(graph1)
-        correlation_means.append(np.mean(graph1))
-        correlation_std.append(np.std(graph1))
-    #
+    nx.draw(tree)
+    plt.draw()
+    #print ((tree1))
+    #print (type(correlations))
+
+
+
+
     # # With the remainder we build another grp
     # remainder = end_index % STEP
     # if remainder > 0:
