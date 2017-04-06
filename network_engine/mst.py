@@ -12,11 +12,11 @@ import matplotlib.pyplot as plt
 
 def main():
     array = np.ones((4,4))
-    matrix = np.matrix([[1,1],[2,1]])
+    # matrix = np.matrix([[1,1],[2,1]])
     graph = nx.from_numpy_matrix(array)
-
+    print (type(graph))
     tree = nx.minimum_spanning_tree(graph)
-    print (tree.edges())
+    print (type(tree))
     nx.draw(graph)
     plt.show()
 

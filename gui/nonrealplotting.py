@@ -5,7 +5,6 @@ It is fairly enough for this purpose.
 @author: Manuel Castro
 @email: desarrollo@institutoibt.come
 
-
 """
 
 import pandas as pd
@@ -24,3 +23,8 @@ def paint (close_data_frame_IBEX, correlation_means, correlation_std):
     plt.plot(correlation_std)
     plt.legend( ('Desviación de la correlación', 'Etiqueta2', 'Etiqueta3'), loc = 'upper left')
     plt.show()
+
+
+
+def paint_network():
+    pass
