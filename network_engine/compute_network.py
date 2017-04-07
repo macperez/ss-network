@@ -26,19 +26,22 @@ def build (df_close):
     # We consider the STEP but you should think the remainder until end_index
     for i in range(0, df_close.shape[0] - HISTORIAL_NUMBER_OF_ROWS, STEP):
         subdf = df_close.ix[i:i+HISTORIAL_NUMBER_OF_ROWS, :]
-        graph=pd.DataFrame(np.diff(np.log(subdf.dropna(1)),axis=0))
+        graph=pd.DataFrame(np.diff(np.log(subdf.dropna(1)), axis=0))
         graph1=np.corrcoef([graph[col] for col in graph.columns])
         inversegraph1=(1-np.absolute(graph1))*np.sign(graph1)
         inversegraph2=nx.from_numpy_matrix(inversegraph1)
         tree = nx.minimum_spanning_tree(inversegraph2)
-        tree1=nx.to_numpy_matrix(tree)
-        correlations.append(tree1)
-        correlation_means.append(np.mean(tree1))
-        correlation_std.append(np.std(tree1))
+        tree1 = nx.to_numpy_matrix(tree)
+        tree2 = np.squeeze(np.asarray(tree1))
+        tree3 = (1-np.absolute(tree2))*np.sign(tree2)
+        np.fill_diagonal(tree3, 1)
+        correlations.append(tree3)
+        correlation_means.append(np.mean(tree3))
+        correlation_std.append(np.std(tree3))
+    #    import ipdb; ipdb.set_trace()
 
-    nx.draw(tree)
-    plt.draw()
-    #print ((tree1))
+
+    #print (correlations)
     #print (type(correlations))
 
 
@@ -56,4 +59,4 @@ def build (df_close):
     #     correlation_std.append(np.std(graph1))
 
 
-    return correlation_means, correlation_std
+    return correlation_means, correlation_std, tree
