@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import networkx as nx
+impor   t networkx as nx
 
 STEP = 1
 HISTORIAL_NUMBER_OF_ROWS = 15
@@ -10,7 +10,6 @@ def build(df_close):
     if STEP > HISTORIAL_NUMBER_OF_ROWS:
         raise ValueError('The STEP parameter must be greater \
                           than HISTORIAL_NUMBER_OF_ROWS')
-
     correlations = []
     correlation_means = []
     correlation_std = []

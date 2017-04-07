@@ -16,11 +16,13 @@ from gui.nonrealplotting import paint
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--paintnetwork", help="paint the network graph",
+    parser.add_argument("--paint", help="paint the network graph",
                         action="store_true")
     args = parser.parse_args()
-    if args.paintnetwork:
+    if args.paint:
         print("Network will be exported to a file")
+
+
 
     start_date = datetime.datetime(2014, 1, 1, 0, 0, 0, 0, pytz.utc)
     end_date = datetime.datetime.today().utcnow()
