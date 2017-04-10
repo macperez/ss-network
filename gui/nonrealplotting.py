@@ -30,11 +30,11 @@ def paint (close_data_frame_IBEX, correlation_means, correlation_std):
 
 
 def paint_network(G, component_names):
-#    nx.draw_networkx_edge_labels(G,pos=nx.spring_layout(G))
-    nx.draw_networkx_labels(G)  # networkx draw()
-    #edge_labels=nx.draw_networkx_edge_labels(G,pos=nx.spring_layout(G))
 
-    #nx.draw_networkx(G, with_labels=True)
+    components_labels = {i:component_names[i] for i in range(len(component_names))}
+    nx.draw_spectral(G)
+
+    #nx.draw_networkx(G,labels=components_labels,with_labels=True)      #nx.draw_networkx(G, with_labels=True)
     plt.draw()  # pyplot draw()
     plt.show()
 

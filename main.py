@@ -29,7 +29,7 @@ def main():
 
     paint(close_data_frame_IBEX, correlation_means, correlation_std)
 
-    paint_network(tree, df.columns.tolist())
+    paint_network(tree, close_data_frame.columns.tolist())
 
 
 
