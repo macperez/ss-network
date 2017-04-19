@@ -10,6 +10,7 @@ It is fairly enough for this purpose.
 import pandas as pd
 import numpy as np
 import networkx as nx
+
 import matplotlib
 matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
@@ -35,9 +36,9 @@ def paint_network(G, component_names):
 
     components_labels = {i: component_names[i]
                          for i in range(len(component_names))}
-    nx.draw_spectral(G)
+    #nx.draw_random(G)
 
-    #nx.draw_networkx(G,labels=components_labels,with_labels=True)      #nx.draw_networkx(G, with_labels=True)
+    nx.graphviz_layout(G, labels=components_labels, with_labels=True)      #nx.draw_networkx(G, with_labels=True)
     plt.draw()  # pyplot draw()
     plt.show()
 
