@@ -9,12 +9,13 @@ It is fairly enough for this purpose.
 
 import pandas as pd
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
+import matplotlib as plt
+plt.use('TkAgg')
+
 
 class Picture:
-    def __init__(self, data):
-        self.data = data
+    # def __init__(self):
+    #     self.data =
 
     def paint(self, close_data_frame_IBEX, correlation_means, correlation_std):
         plt.subplot(3, 1, 1)
@@ -33,5 +34,17 @@ class Picture:
         plt.show()
 
     def paint_network(self, data):
-
         pass
+
+
+def paint_network(G, component_names):
+
+    components_labels = {i: component_names[i]
+                         for i in range(len(component_names))}
+    #nx.draw_spectral(G)
+    nx.draw_random(G)
+    #nx.draw_networkx(G,labels=components_labels,with_labels=True)      #nx.draw_networkx(G, with_labels=True)
+    plt.draw()  # pyplot draw()
+    plt.show()
+
+    pass
