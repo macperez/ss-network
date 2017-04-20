@@ -26,8 +26,7 @@ def main():
     compute_network.HISTORIAL_NUMBER_OF_ROWS = 15
     correlation_means, correlation_std, tree = compute_network.\
         build(close_data_frame)
-
-    paint(close_data_frame_IBEX, correlation_means, correlation_std)
+    #paint(close_data_frame_IBEX, correlation_means, correlation_std)
 
     paint_network(tree, close_data_frame.columns.tolist())
 

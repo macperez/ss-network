@@ -16,6 +16,7 @@ y cómo construir el proyecto.
 ### Instalación DESARROLLO ###
 
 * Lo único que se necesita es un entorno Python 3.5
+* sudo apt-get install python3-dev (Ver qué pasa en windows)
 * Con lo que está en requirements.txt
 
 ```

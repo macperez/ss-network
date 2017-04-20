@@ -10,6 +10,8 @@ It is fairly enough for this purpose.
 import pandas as pd
 import numpy as np
 import networkx as nx
+import pygraphviz
+import pygraphviz
 
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -29,17 +31,18 @@ def paint (close_data_frame_IBEX, correlation_means, correlation_std):
     plt.plot(correlation_std)
     plt.ylabel('Correlation deviation')
     plt.show()
-    pass
+
 
 
 def paint_network(G, component_names):
 
-    components_labels = {i: component_names[i]
-                         for i in range(len(component_names))}
-    #nx.draw_random(G)
+    agraph = nx.nx_agraph.to_agraph(G)
+    agraph.node_attr['shape'] = 'rectangle'
+    agraph.node_attr['fontsize'] = 8
+    component_index = 0
+    for node in agraph.nodes():
+        node.attr['label'] = component_names[component_index]
+        component_index += 1
 
-    nx.graphviz_layout(G, labels=components_labels, with_labels=True)      #nx.draw_networkx(G, with_labels=True)
-    plt.draw()  # pyplot draw()
-    plt.show()
-
-    pass
+    #graphviz_layout
+    agraph.draw('file.png',prog='neato')

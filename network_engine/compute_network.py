@@ -38,8 +38,8 @@ def build (df_close):
         correlation_means.append(np.mean(tree3))
         correlation_std.append(np.std(tree3))
     #    import ipdb; ipdb.set_trace()
-
-
+    import ipdb; ipdb.set_trace()
+    print (tree)
     #print (correlations)
     #print (type(correlations))
 
