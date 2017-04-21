@@ -33,11 +33,10 @@ def paint (close_data_frame_IBEX, correlation_means, correlation_std):
     plt.show()
 
 
-
 def paint_network(G, component_names):
 
     agraph = nx.nx_agraph.to_agraph(G)
-    agraph.node_attr['shape'] = 'rectangle'
+    agraph.node_attr['shape'] = 'ellipse'
     agraph.node_attr['fontsize'] = 8
     component_index = 0
     for node in agraph.nodes():
