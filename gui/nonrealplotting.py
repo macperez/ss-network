@@ -10,8 +10,6 @@ It is fairly enough for this purpose.
 import pandas as pd
 import numpy as np
 import networkx as nx
-import pygraphviz
-import pygraphviz
 
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -33,15 +31,15 @@ def paint (close_data_frame_IBEX, correlation_means, correlation_std):
     plt.show()
 
 
-def paint_network(G, component_names):
-
-    agraph = nx.nx_agraph.to_agraph(G)
-    agraph.node_attr['shape'] = 'ellipse'
-    agraph.node_attr['fontsize'] = 8
-    component_index = 0
-    for node in agraph.nodes():
-        node.attr['label'] = component_names[component_index]
-        component_index += 1
-
-    #graphviz_layout
-    agraph.draw('file.png',prog='neato')
+# def paint_network(G, component_names):
+#
+#     agraph = nx.nx_agraph.to_agraph(G)
+#     agraph.node_attr['shape'] = 'ellipse'
+#     agraph.node_attr['fontsize'] = 8
+#     component_index = 0
+#     for node in agraph.nodes():
+#         node.attr['label'] = component_names[component_index]
+#         component_index += 1
+#
+#     #graphviz_layout
+#     agraph.draw('file.png',prog='neato')
