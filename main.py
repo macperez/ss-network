@@ -6,12 +6,15 @@ modules in order to get out the functionality
 @email: desarrollo@institutoibt.come
 
 """
-
+import sys
 import datetime
+import logging
+import logging.config
 import pytz
 from network_engine import compute_network
 from datacollector.yahoo_finance import YahooConnector
 from gui.nonrealplotting import paint, paint_network
+from gui import coreapp
 
 def main():
     start_date = datetime.datetime(2017, 1, 1, 0, 0, 0, 0, pytz.utc)
@@ -33,4 +36,9 @@ def main():
 
 
 if __name__== '__main__':
-    main()
+    # main()
+    # logging.basicConfig(level=logging.INFO)
+    logging.config.fileConfig('logging.conf')
+    coreapp.startapp()
+
+    logging.info('Closing application')
