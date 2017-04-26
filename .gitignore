@@ -1,3 +1,3 @@
 # a comentario – esto es ignorado
-#*.pyc       # no se suben los archivos que tengan como extensión .pyc (compilados python)
-*/__pycache__/*
+*.pyc       # no se suben los archivos que tengan como extensión .pyc (compilados python)
+**/__pycache__/*

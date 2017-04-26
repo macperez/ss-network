@@ -11,7 +11,6 @@ stock data. They are useful for past-case studies.
 import urllib.request as req
 import pandas as pd
 from bs4 import BeautifulSoup
-from datacollector.connectors import Connector
 from pandas_datareader import DataReader
 
 
@@ -21,7 +20,7 @@ INDEX_SITES = {
 }
 
 
-class YahooConnector (Connector):
+class YahooConnector:
     """
     A base storage class, providing some default behaviors that all other
     storage systems can inherit or override, as necessary.
@@ -29,6 +28,8 @@ class YahooConnector (Connector):
     Use a scraping system in order to collect the index components.
     """
 
+    def __init__(self):
+        pass
     def __init__(self, indexname):
         self.indexname = indexname
 
