@@ -24,9 +24,10 @@ AVAILABLE_CONNECTORS = {}
 
 for importer, modname, ispkg in \
     pkgutil.iter_modules(datacollector.__path__):
-    LOGGER.debug("Found submodule {} (is a package: {})"\
-        .format(modname,ispkg))
-    module = __import__(modname)
+    LOGGER.debug("Found submodule {} (is a package: {}) of importer {}"\
+        .format(modname,ispkg, importer))
+
+    module = modname
     if not ispkg:
         AVAILABLE_CONNECTORS[modname] = module
     LOGGER.debug("Imported {0}".format(module))

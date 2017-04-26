@@ -14,7 +14,7 @@ import logging.config
 import pytz
 from network_engine import compute_network
 from datacollector.yahoo_finance import YahooConnector
-from gui.nonrealplotting import paint, paint_network
+from gui.nonrealplotting import paint
 from gui import coreapp
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
