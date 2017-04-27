@@ -9,15 +9,17 @@ modules in order to get out the functionality
 import os
 import sys
 import datetime
-import logging
-import logging.config
 import pytz
 from network_engine import compute_network
 from datacollector.yahoo_finance import YahooConnector
-from gui.nonrealplotting import paint, paint_network
+from gui.nonrealplotting import paint
 from gui import coreapp
 
+
+
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 
 def main():
     start_date = datetime.datetime(2017, 1, 1, 0, 0, 0, 0, pytz.utc)
@@ -34,7 +36,7 @@ def main():
         build(close_data_frame)
     #paint(close_data_frame_IBEX, correlation_means, correlation_std)
 
-    paint_network(tree, close_data_frame.columns.tolist())
+    #paint_network(tree, close_data_frame.columns.tolist())
 
 
 
@@ -42,7 +44,12 @@ if __name__== '__main__':
     # main()
     # logging.basicConfig(level=logging.INFO)
 
+    import logging.config
+    logging.config.fileConfig('logging.conf')
 
     coreapp.startapp()
+
+
+
 
     # logging.info('Closing application')

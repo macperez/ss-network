@@ -12,24 +12,29 @@ import os
 import sys
 import logging
 import pkgutil
-from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction,\
-                            QApplication, QDesktopWidget, QMessageBox
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QWidget,\
+                            QApplication, QDesktopWidget, QMessageBox,\
+                            QFrame, QSplitter, QHBoxLayout, QTextEdit,\
+                            QVBoxLayout, QStyleFactory, QPushButton
+
 from PyQt5.QtGui import QIcon
 import datacollector
+from gui import connection
 
-logging.config.fileConfig('logging.conf')
-LOGGER = logging.getLogger('simpleDevelopment')
+log = logging.getLogger(__name__)
 
 AVAILABLE_CONNECTORS = {}
 
 for importer, modname, ispkg in \
     pkgutil.iter_modules(datacollector.__path__):
-    LOGGER.debug("Found submodule {} (is a package: {})"\
+    log.debug("Found submodule {} (is a package: {})"\
         .format(modname,ispkg))
     module = __import__(modname)
     if not ispkg:
         AVAILABLE_CONNECTORS[modname] = module
-    LOGGER.debug("Imported {0}".format(module))
+    log.debug("Imported {0}".format(module))
 
 
 class MainWindow(QMainWindow):
@@ -52,7 +57,10 @@ class MainWindow(QMainWindow):
 
         self.toolbar = self.addToolBar('Exit')
         self.toolbar.addAction(self.exitAction)
-
+        self.containerWidget = ContainerWidget()
+        # centralFrame = QFrame()
+        # centralFrame.setFrameShape(QFrame.StyledPanel)
+        self.setCentralWidget(self.containerWidget)
         self.resize(600, 500)
         self.__center()
         self.setWindowTitle('Scientia Network Tool')
@@ -116,13 +124,47 @@ class MainWindow(QMainWindow):
         self.move(qr.topLeft())
 
 
+class ContainerWidget(QWidget):
+    '''
+    Main container of the center of the application
+    It lay out all the subcontainers over the screen.s
+    '''
+
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        hbox = QHBoxLayout(self)
+        topleft = QFrame()
+        topleft.setFrameShape(QFrame.StyledPanel)
+        bottom = QFrame()
+        bottom.setFrameShape(QFrame.StyledPanel)
+        splitter1 = QSplitter(Qt.Horizontal)
+        textedit = QTextEdit()
+        splitter1.addWidget(topleft)
+        splitter1.addWidget(textedit)
+        splitter1.setSizes([100,200])
+        splitter2 = QSplitter(Qt.Vertical)
+        splitter2.addWidget(splitter1)
+        splitter2.addWidget(bottom)
+        hbox.addWidget(splitter2)
+        self.setLayout(hbox)
+        QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
+
+
+
 
 def startapp():
+
     app = QApplication(sys.argv)
     # muy importante instanciar y asignar a una variable porque si no, no se
     # pinta la ventana
 
-    LOGGER.info('Starting application...')
+    log.info('Starting application...')
+    if not connection.createConnection():
+        sys.exit(1)
+
     main = MainWindow()
     sys.exit(app.exec_())
     return app
