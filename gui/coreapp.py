@@ -27,10 +27,8 @@ log = logging.getLogger(__name__)
 
 AVAILABLE_CONNECTORS = {}
 
-for importer, modname, ispkg in \
-    pkgutil.iter_modules(datacollector.__path__):
-    log.debug("Found submodule {} (is a package: {})"\
-        .format(modname,ispkg))
+for importer, modname, ispkg in pkgutil.iter_modules(datacollector.__path__):
+    log.debug("Found submodule {} (is a package: {})".format(modname, ispkg))
     module = __import__(modname)
     if not ispkg:
         AVAILABLE_CONNECTORS[modname] = module
@@ -52,9 +50,6 @@ class MainWindow(QMainWindow):
         self.__init_menu()
 
         self.statusBar()  # La primera llamada lo crea, las siguientes
-                          # lo invocan solamente
-
-
         self.toolbar = self.addToolBar('Exit')
         self.toolbar.addAction(self.exitAction)
         self.containerWidget = ContainerWidget()
@@ -86,7 +81,7 @@ class MainWindow(QMainWindow):
         if 'yahoo_finance' in AVAILABLE_CONNECTORS:
             self.yahoo_connector_action = \
                 QAction(QIcon('gui/images/yahoo_conn24.png'),
-                              'Yahoo connector', self)
+                        'Yahoo connector', self)
             self.yahoo_connector_action.setShortcut('Ctrl+Y')
             self.yahoo_connector_action.setStatusTip('Yahoo connection')
             self.yahoo_connector_action.triggered.\
@@ -101,7 +96,6 @@ class MainWindow(QMainWindow):
         self.statusBar().clearMessage()
         self.statusBar().showMessage('Connected to Yahoo finance')
 
-
     def __init_menu(self):
         '''
         Initialize the menubar and its components.
@@ -111,8 +105,6 @@ class MainWindow(QMainWindow):
         new_datasource_menu = filemenu.addMenu('&New Data source')
         new_datasource_menu.addAction(self.yahoo_connector_action)
         filemenu.addAction(self.exitAction)
-
-
 
     def __center(self):
         '''
@@ -144,7 +136,7 @@ class ContainerWidget(QWidget):
         textedit = QTextEdit()
         splitter1.addWidget(topleft)
         splitter1.addWidget(textedit)
-        splitter1.setSizes([100,200])
+        splitter1.setSizes([100, 200])
         splitter2 = QSplitter(Qt.Vertical)
         splitter2.addWidget(splitter1)
         splitter2.addWidget(bottom)
@@ -153,18 +145,11 @@ class ContainerWidget(QWidget):
         QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
 
 
-
-
 def startapp():
 
     app = QApplication(sys.argv)
     # muy importante instanciar y asignar a una variable porque si no, no se
     # pinta la ventana
-
-    log.info('Starting application...')
-    if not connection.createConnection():
-        sys.exit(1)
-
     main = MainWindow()
     sys.exit(app.exec_())
     return app

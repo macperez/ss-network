@@ -10,8 +10,7 @@ from PyQt5.QtSql import QSqlDatabase, QSqlQuery
 log = logging.getLogger(__name__)
 
 
-def create_tables ():
-
+def create_tables():
     log.debug("Creating tables in database")
     query = QSqlQuery()
     query.exec_("create table sector(id int primary key, "
@@ -20,8 +19,9 @@ def create_tables ():
     query.exec_("insert into sector values(2, 'Energy', 'Energía')")
     query.exec_("insert into sector values(3, 'Bank', 'Banca')")
 
-
-    query.exec_("create table ticket(id int primary key, code varchar(10) NOT NULL, description varchar(80), sector int)")
+    query.exec_("create table ticket(id int primary key,"
+                "code varchar(10) NOT NULL, description varchar(80),"
+                "sector int)")
     query.exec_("insert into employee values(1, 'GAS.MC', 'GAS NATURAL', 2)")
     query.exec_("insert into employee values(2, 'SAN.MC', 'Banco Santander',3)")
 
@@ -38,8 +38,7 @@ def create_tables ():
                                              "imagefile int,"
                                              "location varchar(20),"
                                              "country varchar(20),"
-                                             "description varchar(100))");
-
+                                             "description varchar(100))")
 
 
 def createConnection():

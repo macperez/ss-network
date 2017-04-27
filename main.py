@@ -13,12 +13,11 @@ import pytz
 from network_engine import compute_network
 from datacollector.yahoo_finance import YahooConnector
 from gui.nonrealplotting import paint
-from gui import coreapp
+from gui import coreapp, connection
 
-
-
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-
+import logging.config
+logging.config.fileConfig('logging.conf')
+log = logging.getLogger('simpleDevelopment')
 
 
 def main():
@@ -34,22 +33,16 @@ def main():
     compute_network.HISTORIAL_NUMBER_OF_ROWS = 15
     correlation_means, correlation_std, tree = compute_network.\
         build(close_data_frame)
-    #paint(close_data_frame_IBEX, correlation_means, correlation_std)
+    # paint(close_data_frame_IBEX, correlation_means, correlation_std)
 
-    #paint_network(tree, close_data_frame.columns.tolist())
+    # paint_network(tree, close_data_frame.columns.tolist())
 
 
+if __name__ == '__main__':
+    # log.info('Starting application...')
 
-if __name__== '__main__':
-    # main()
-    # logging.basicConfig(level=logging.INFO)
-
-    import logging.config
-    logging.config.fileConfig('logging.conf')
+    log.info('Starting application')
+    if not connection.createConnection():
+        sys.exit(1)
 
     coreapp.startapp()
-
-
-
-
-    # logging.info('Closing application')
