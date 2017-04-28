@@ -9,6 +9,8 @@ from PyQt5.QtSql import QSqlDatabase, QSqlQuery
 
 log = logging.getLogger('simpleDevelopment')
 
+PATH_TO_FILE = os.path.join(os.getenv('HOME'), config.DATABASE_NAME)
+
 
 def create_tables():
     log.debug("Creating tables in database")
@@ -27,13 +29,39 @@ def create_tables():
     query.exec_("insert into component values(2, 'SAN.MC',"
                 " 'Banco Santander',3)")
 
-    query.exec_("create table custom_network(id int primary key, "
+    query.exec_("create table customnetwork(id int primary key, "
                 "name varchar(50) NOT NULL, description varchar(20))")
-    query.exec_("insert into custom_network values "
+    query.exec_("insert into customnetwork values "
                 "(1, 'IBEX35', 'Primer ejemplo')")
-    query.exec_("insert into custom_network values "
+    query.exec_("insert into customnetwork values "
                 "(2, 'CAC', 'Segundo ejemplo')")
-    # query.exec_("create table employee(id int, name varchar(20), city int, country int)")
+
+
+    query.exec_("create table customnetwork_component("
+                "component_id int not null references component(id), "
+                "customnetwork_id int not null references customnetwork(id),"
+                "primary key (component_id, customnetwork_id))")
+
+
+def delete_database():
+    try:
+        os.remove(PATH_TO_FILE)
+        log.info("The database has been deleted")
+
+    except OSError as error:
+        log.error("The file it does not exist")
+
+
+def create_database():
+    if os.path.isfile(PATH_TO_FILE):
+        log.info("The database is already created")
+    else:
+        db = QSqlDatabase.addDatabase('QSQLITE')
+        db.setDatabaseName(PATH_TO_FILE)
+        db.open()
+        create_tables()
+        db.close()
+        log.info("The database has been created")
 
 
 def createConnection():
@@ -41,12 +69,13 @@ def createConnection():
     db = QSqlDatabase.addDatabase('QSQLITE')
     # db.setDatabaseName(':memory:') # RAM database, bien para tests
 
-    path_to_file = os.path.join(os.getenv('HOME'), config.DATABASE_NAME)
-    if os.path.isfile(path_to_file):
+    if os.path.isfile(PATH_TO_FILE):
         iscreated = True
+        log.info("The database is already created")
     else:
         iscreated = False
-        db.setDatabaseName(path_to_file)
+        db.setDatabaseName(PATH_TO_FILE)
+        log.info("Creating database")
     if not db.open():
         QMessageBox.critical(None, "Cannot open database",
                              "Unable to establish a database connection.\n"
