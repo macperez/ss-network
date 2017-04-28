@@ -23,7 +23,8 @@ from PyQt5.QtGui import QIcon
 import datacollector
 from gui import connection
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('simpleDevelopment')
+
 
 AVAILABLE_CONNECTORS = {}
 

@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('simpleDevelopment')
 
 
 def create_tables():
@@ -45,11 +45,13 @@ def createConnection():
     log.debug("Connecting to database")
     db = QSqlDatabase.addDatabase('QSQLITE')
     # db.setDatabaseName(':memory:') # RAM database, bien para tests
-    if os.path.isfile(config.DATABASE_NAME):
+
+    path_to_file = os.path.join(os.getenv('HOME'), config.DATABASE_NAME)
+    if os.path.isfile(path_to_file):
         iscreated = True
     else:
         iscreated = False
-        db.setDatabaseName('nt.db')
+        db.setDatabaseName(path_to_file)
     if not db.open():
         QMessageBox.critical(None, "Cannot open database",
                 "Unable to establish a database connection.\n"

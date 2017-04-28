@@ -17,7 +17,7 @@ from gui import coreapp, connection
 
 import logging.config
 logging.config.fileConfig('logging.conf')
-log = logging.getLogger('simpleDevelopment')
+
 
 
 def main():
@@ -39,9 +39,8 @@ def main():
 
 
 if __name__ == '__main__':
-    # log.info('Starting application...')
-
-    log.info('Starting application')
+    log = logging.getLogger('simpleDevelopment')
+    log.info('Starting application...')
     if not connection.createConnection():
         sys.exit(1)
 
