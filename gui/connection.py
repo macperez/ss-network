@@ -30,12 +30,11 @@ def create_tables():
                 " 'Banco Santander',3)")
 
     query.exec_("create table customnetwork(id int primary key, "
-                "name varchar(50) NOT NULL, description varchar(20))")
+                "name varchar(50) NOT NULL, description varchar(150))")
     query.exec_("insert into customnetwork values "
                 "(1, 'IBEX35', 'Primer ejemplo')")
     query.exec_("insert into customnetwork values "
                 "(2, 'CAC', 'Segundo ejemplo')")
-
 
     query.exec_("create table customnetwork_component("
                 "component_id int not null references component(id), "
@@ -68,14 +67,14 @@ def createConnection():
     log.debug("Connecting to database")
     db = QSqlDatabase.addDatabase('QSQLITE')
     # db.setDatabaseName(':memory:') # RAM database, bien para tests
-
+    import ipdb; ipdb.set_trace()
     if os.path.isfile(PATH_TO_FILE):
         iscreated = True
         log.info("The database is already created")
     else:
         iscreated = False
-        db.setDatabaseName(PATH_TO_FILE)
         log.info("Creating database")
+    db.setDatabaseName(PATH_TO_FILE)
     if not db.open():
         QMessageBox.critical(None, "Cannot open database",
                              "Unable to establish a database connection.\n"
@@ -84,8 +83,8 @@ def createConnection():
                              "driver documentation for information "
                              "how to build it.\n\n"
                              "Click Cancel to exit.", QMessageBox.Cancel)
-        return False
+        return False, None
 
     if not iscreated:
         create_tables()
-    return True
+    return True, db

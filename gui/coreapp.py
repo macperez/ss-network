@@ -20,6 +20,8 @@ from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QWidget,\
                             QVBoxLayout, QStyleFactory, QPushButton
 
 from PyQt5.QtGui import QIcon
+
+from gui import models
 import datacollector
 from gui import connection
 
@@ -43,6 +45,11 @@ class MainWindow(QMainWindow):
     '''
     def __init__(self):
         super().__init__()
+        connected, db = connection.createConnection()
+        if not connected:
+            sys.exit(1)
+        self.connection = db
+
         self.initUI()
 
     def initUI(self):
@@ -53,25 +60,23 @@ class MainWindow(QMainWindow):
         self.statusBar()  # La primera llamada lo crea, las siguientes
         self.toolbar = self.addToolBar('Exit')
         self.toolbar.addAction(self.exitAction)
-        self.containerWidget = ContainerWidget()
-        # centralFrame = QFrame()
-        # centralFrame.setFrameShape(QFrame.StyledPanel)
+        self.containerWidget = ContainerWidget(self.connection)
         self.setCentralWidget(self.containerWidget)
         self.resize(600, 500)
         self.__center()
         self.setWindowTitle('Scientia Network Tool')
         self.show()
 
-    # FIXME: temporalmente desactivado
-    # def closeEvent(self, event):
-    #     reply = QMessageBox.question(self, 'Message',
-    #                                  'Are you sure to quit?',
-    #                                  QMessageBox.Yes |
-    #                                  QMessageBox.No, QMessageBox.No)
-    #     if reply == QMessageBox.Yes:
-    #         event.accept()
-    #     else:
-    #         event.ignore()
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, 'Message',
+                                     'Are you sure to quit?',
+                                     QMessageBox.Yes |
+                                     QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.connection.close()
+            event.accept()
+        else:
+            event.ignore()
 
     def __init_actions(self):
         self.exitAction = QAction(QIcon('gui/images/exit24.png'), 'Exit', self)
@@ -123,8 +128,9 @@ class ContainerWidget(QWidget):
     It lay out all the subcontainers over the screen.s
     '''
 
-    def __init__(self):
+    def __init__(self, conn):
         super().__init__()
+        self.connection = conn
         self.initUI()
 
     def initUI(self):
@@ -134,10 +140,15 @@ class ContainerWidget(QWidget):
         bottom = QFrame()
         bottom.setFrameShape(QFrame.StyledPanel)
         splitter1 = QSplitter(Qt.Horizontal)
-        textedit = QTextEdit()
+
+        cnmodel = models.CustomNetwork(self.connection)
+        log.debug("Creating view")
+        view = cnmodel.getView()
+
         splitter1.addWidget(topleft)
-        splitter1.addWidget(textedit)
+        splitter1.addWidget(view)
         splitter1.setSizes([100, 200])
+
         splitter2 = QSplitter(Qt.Vertical)
         splitter2.addWidget(splitter1)
         splitter2.addWidget(bottom)

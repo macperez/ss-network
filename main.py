@@ -34,11 +34,7 @@ def main():
     elif args.destroy:
         connection.delete_database()
     else:
-
         log.info('Starting application...')
-        if not connection.createConnection():
-            sys.exit(1)
-
         coreapp.startapp()
 
     # start_date = datetime.datetime(2017, 1, 1, 0, 0, 0, 0, pytz.utc)
