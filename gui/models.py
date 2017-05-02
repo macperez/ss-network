@@ -2,7 +2,7 @@ import logging
 from PyQt5.QtCore import Qt
 from PyQt5.QtSql import (QSqlQuery, QSqlRelation, QSqlRelationalDelegate,
                          QSqlRelationalTableModel, QSqlTableModel)
-from PyQt5.QtWidgets import QTableView, QHeaderView
+from PyQt5.QtWidgets import QTableView, QHeaderView, QTreeView
 
 log = logging.getLogger('simpleDevelopment')
 
@@ -43,11 +43,11 @@ class Components(object):
         self.model.setEditStrategy(QSqlTableModel.OnManualSubmit)
         self.model.select()
         # self.model.setHeaderData(0, Qt.Horizontal, "id")
-        self.model.setHeaderData(1, Qt.Horizontal, "Name")
+        self.model.setHeaderData(1, Qt.Horizontal, "Ticket")
         self.model.setHeaderData(2, Qt.Horizontal, "Description")
 
     def getView(self):
-        view = QTableView()
+        view = QTreeView()
         view.setModel(self.model)
         view.setItemDelegate(QSqlRelationalDelegate(view))
         view.setWindowTitle(title)

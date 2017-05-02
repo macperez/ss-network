@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QWidget,\
                             QApplication, QDesktopWidget, QMessageBox,\
                             QFrame, QSplitter, QHBoxLayout, QTextEdit,\
                             QVBoxLayout, QStyleFactory, QPushButton, \
-                            QHeaderView
+                            QHeaderView, QGridLayout
 
 from PyQt5.QtGui import QIcon
 
@@ -62,7 +62,7 @@ class MainWindow(QMainWindow):
         self.statusBar()  # La primera llamada lo crea, las siguientes
         self.toolbar = self.addToolBar('Exit')
         self.toolbar.addAction(self.exitAction)
-        self.containerWidget = ContainerWidget(self.connection)
+        self.containerWidget = ContainerWidget(self)
         self.setCentralWidget(self.containerWidget)
         self.resize(600, 500)
         self.__center()
@@ -131,27 +131,30 @@ class ContainerWidget(QWidget):
     It lay out all the subcontainers over the screens
     '''
 
-    def __init__(self, conn):
-        super().__init__()
-        self.connection = conn
-        self.initUI()
-        self.cnmodel = None
+    def __init__(self, main_window):
 
+        super().__init__()
+        self.parent_window = main_window
+        self.connection = self.parent_window.connection
+        self.initUI()
     def initUI(self):
         hbox = QHBoxLayout(self)
         topleft = QFrame()
         topleft.setFrameShape(QFrame.StyledPanel)
+
+
         bottom = QFrame()
         bottom.setFrameShape(QFrame.StyledPanel)
         splitter1 = QSplitter(Qt.Horizontal)
 
         self.cnmodel = models.CustomNetwork(self.connection)
-        view = self.cnmodel.getView()
-        self._formatTableView(view)
-
-
+        self.compmodel = models.Components(self.connection)
+        cnview = self.cnmodel.getView()
+        self._formatTableCustomNetworkView(cnview)
+        # self._formatTableComponentsView(self.compmodel.getView())
+        self._setlayoutTopleft(topleft)
         splitter1.addWidget(topleft)
-        splitter1.addWidget(view)
+        splitter1.addWidget(cnview)
         splitter1.setSizes([100, 200])
 
         splitter2 = QSplitter(Qt.Vertical)
@@ -161,7 +164,31 @@ class ContainerWidget(QWidget):
         self.setLayout(hbox)
         QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
 
-    def _formatTableView(self, view):
+    def _setlayoutTopleft(self, topleft_frame):
+        grid = QGridLayout()
+
+        newbutton= QPushButton()
+        newbutton.setIcon(QIcon('gui/images/plus-sign24.png'))
+        editbutton = QPushButton()
+        editbutton.setIcon(QIcon('gui/images/edit24.png'))
+        deletebutton = QPushButton()
+        deletebutton.setIcon(QIcon('gui/images/delete24.png'))
+
+        grid = QGridLayout()
+
+        grid.addWidget(newbutton, 0, 5)
+        grid.addWidget(editbutton, 1, 5)
+        grid.addWidget(deletebutton, 2, 5)
+        grid.addWidget(self.compmodel.getView(), 0, 0, 2, 5)
+        # self.compmodel.getView()
+        topleft_frame.setLayout(grid)
+
+        # self.setGeometry(300, 300, 350, 300)
+        # self.setWindowTitle('Review')
+        # self.show()
+
+
+    def _formatTableCustomNetworkView(self, view):
         maxcols = view.horizontalHeader().count()
         log.debug("Number of columns displayed {}".format(maxcols))
         for col in range (maxcols):
@@ -172,7 +199,6 @@ class ContainerWidget(QWidget):
 
 
 def startapp():
-
     app = QApplication(sys.argv)
     # muy importante instanciar y asignar a una variable porque si no, no se
     # pinta la ventana
