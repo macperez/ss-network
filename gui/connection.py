@@ -67,7 +67,6 @@ def createConnection():
     log.debug("Connecting to database")
     db = QSqlDatabase.addDatabase('QSQLITE')
     # db.setDatabaseName(':memory:') # RAM database, bien para tests
-    import ipdb; ipdb.set_trace()
     if os.path.isfile(PATH_TO_FILE):
         iscreated = True
         log.info("The database is already created")

@@ -17,9 +17,11 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QWidget,\
                             QApplication, QDesktopWidget, QMessageBox,\
                             QFrame, QSplitter, QHBoxLayout, QTextEdit,\
-                            QVBoxLayout, QStyleFactory, QPushButton
+                            QVBoxLayout, QStyleFactory, QPushButton, \
+                            QHeaderView
 
 from PyQt5.QtGui import QIcon
+
 
 from gui import models
 import datacollector
@@ -66,6 +68,7 @@ class MainWindow(QMainWindow):
         self.__center()
         self.setWindowTitle('Scientia Network Tool')
         self.show()
+        self.connection.close()
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Message',
@@ -125,13 +128,14 @@ class MainWindow(QMainWindow):
 class ContainerWidget(QWidget):
     '''
     Main container of the center of the application
-    It lay out all the subcontainers over the screen.s
+    It lay out all the subcontainers over the screens
     '''
 
     def __init__(self, conn):
         super().__init__()
         self.connection = conn
         self.initUI()
+        self.cnmodel = None
 
     def initUI(self):
         hbox = QHBoxLayout(self)
@@ -141,9 +145,10 @@ class ContainerWidget(QWidget):
         bottom.setFrameShape(QFrame.StyledPanel)
         splitter1 = QSplitter(Qt.Horizontal)
 
-        cnmodel = models.CustomNetwork(self.connection)
-        log.debug("Creating view")
-        view = cnmodel.getView()
+        self.cnmodel = models.CustomNetwork(self.connection)
+        view = self.cnmodel.getView()
+        self._formatTableView(view)
+
 
         splitter1.addWidget(topleft)
         splitter1.addWidget(view)
@@ -155,6 +160,15 @@ class ContainerWidget(QWidget):
         hbox.addWidget(splitter2)
         self.setLayout(hbox)
         QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
+
+    def _formatTableView(self, view):
+        maxcols = view.horizontalHeader().count()
+        log.debug("Number of columns displayed {}".format(maxcols))
+        for col in range (maxcols):
+            view.horizontalHeader().setSectionResizeMode(col,
+                                                         QHeaderView.Stretch)
+
+        view.hideColumn(0)
 
 
 def startapp():
