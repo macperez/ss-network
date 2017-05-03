@@ -23,7 +23,7 @@ from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QWidget,\
 from PyQt5.QtGui import QIcon
 
 
-from gui import models
+from gui import models, views
 import datacollector
 from gui import connection
 
@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
         self.toolbar.addAction(self.exitAction)
         self.containerWidget = ContainerWidget(self)
         self.setCentralWidget(self.containerWidget)
-        self.resize(600, 500)
+        self.resize(900, 500)
         self.__center()
         self.setWindowTitle('Scientia Network Tool')
         self.show()
@@ -132,29 +132,27 @@ class ContainerWidget(QWidget):
     '''
 
     def __init__(self, main_window):
-
         super().__init__()
-        self.parent_window = main_window
-        self.connection = self.parent_window.connection
+        self.parent = main_window
+        self.connection = self.parent.connection
+        self.cnview = views.CustomNetworkView(self)
+        self.cncview = views.CustomNetworkComponentView(self)
         self.initUI()
+
     def initUI(self):
         hbox = QHBoxLayout(self)
         topleft = QFrame()
         topleft.setFrameShape(QFrame.StyledPanel)
 
-
         bottom = QFrame()
         bottom.setFrameShape(QFrame.StyledPanel)
         splitter1 = QSplitter(Qt.Horizontal)
-
-        self.cnmodel = models.CustomNetwork(self.connection)
         self.compmodel = models.Components(self.connection)
-        cnview = self.cnmodel.getView()
-        self._formatTableCustomNetworkView(cnview)
-        # self._formatTableComponentsView(self.compmodel.getView())
+
+
         self._setlayoutTopleft(topleft)
         splitter1.addWidget(topleft)
-        splitter1.addWidget(cnview)
+        splitter1.addWidget(self.cnview.getView())
         splitter1.setSizes([100, 200])
 
         splitter2 = QSplitter(Qt.Vertical)
@@ -165,7 +163,9 @@ class ContainerWidget(QWidget):
         QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
 
     def _setlayoutTopleft(self, topleft_frame):
-        grid = QGridLayout()
+
+        horizontal_layout = QHBoxLayout()
+        vertical_layout = QVBoxLayout()
 
         newbutton= QPushButton()
         newbutton.setIcon(QIcon('gui/images/plus-sign24.png'))
@@ -173,29 +173,21 @@ class ContainerWidget(QWidget):
         editbutton.setIcon(QIcon('gui/images/edit24.png'))
         deletebutton = QPushButton()
         deletebutton.setIcon(QIcon('gui/images/delete24.png'))
+        # view = self.compmodel.getView()
 
-        grid = QGridLayout()
-
-        grid.addWidget(newbutton, 0, 5)
-        grid.addWidget(editbutton, 1, 5)
-        grid.addWidget(deletebutton, 2, 5)
-        grid.addWidget(self.compmodel.getView(), 0, 0, 2, 5)
-        # self.compmodel.getView()
-        topleft_frame.setLayout(grid)
+        vertical_layout.addWidget(newbutton)
+        vertical_layout.addWidget(editbutton)
+        vertical_layout.addWidget(deletebutton)
+        horizontal_layout.addWidget(self.cncview.getView())
+        horizontal_layout.addLayout(vertical_layout)
+        topleft_frame.setLayout(horizontal_layout)
 
         # self.setGeometry(300, 300, 350, 300)
         # self.setWindowTitle('Review')
         # self.show()
 
 
-    def _formatTableCustomNetworkView(self, view):
-        maxcols = view.horizontalHeader().count()
-        log.debug("Number of columns displayed {}".format(maxcols))
-        for col in range (maxcols):
-            view.horizontalHeader().setSectionResizeMode(col,
-                                                         QHeaderView.Stretch)
 
-        view.hideColumn(0)
 
 
 def startapp():
