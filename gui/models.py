@@ -7,10 +7,6 @@ from PyQt5.QtWidgets import QTableView, QHeaderView, QTreeView
 log = logging.getLogger('simpleDevelopment')
 
 
-
-
-
-
 class CustomNetwork(object):
 
     def __init__(self, connection):

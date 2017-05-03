@@ -9,8 +9,10 @@ created: May 3,  2017
 """
 
 import logging
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableView, QHeaderView
 from PyQt5.QtSql import QSqlRelationalDelegate
+
 from gui import models
 
 log = logging.getLogger('simpleDevelopment')
@@ -29,10 +31,6 @@ class ApplicationTableView(object):
             self.view.horizontalHeader().setSectionResizeMode(col,
                                                          QHeaderView.Stretch)
 
-        self.view.hideColumn(0)
-
-
-
 
 class CustomNetworkView(ApplicationTableView):
 
@@ -44,6 +42,15 @@ class CustomNetworkView(ApplicationTableView):
         self.view.setItemDelegate(QSqlRelationalDelegate(self.view))
         self._formatTable()
         super().__init__(self.view)
+        self.view.selectionModel().selectionChanged.connect(self.selChanged)
+
+    def _formatTable(self):
+        super()._formatTable()
+        self.view.hideColumn(0)
+
+    def selChanged(self, event, selected):
+        import ipdb; ipdb.set_trace()
+        log.debug(selected)
 
 
 

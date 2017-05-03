@@ -173,7 +173,6 @@ class ContainerWidget(QWidget):
         editbutton.setIcon(QIcon('gui/images/edit24.png'))
         deletebutton = QPushButton()
         deletebutton.setIcon(QIcon('gui/images/delete24.png'))
-        # view = self.compmodel.getView()
 
         vertical_layout.addWidget(newbutton)
         vertical_layout.addWidget(editbutton)
@@ -181,12 +180,6 @@ class ContainerWidget(QWidget):
         horizontal_layout.addWidget(self.cncview.getView())
         horizontal_layout.addLayout(vertical_layout)
         topleft_frame.setLayout(horizontal_layout)
-
-        # self.setGeometry(300, 300, 350, 300)
-        # self.setWindowTitle('Review')
-        # self.show()
-
-
 
 
 
