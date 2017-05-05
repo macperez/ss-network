@@ -33,7 +33,6 @@ class Components(object):
         self.model.setEditStrategy(QSqlTableModel.OnManualSubmit)
         self.model.setRelation(0, QSqlRelation('component', 'id', 'ticket'))
         self.model.setRelation(1, QSqlRelation('customnetwork', 'id', 'name'))
-
         self.model.select()
         # self.model.setHeaderData(0, Qt.Horizontal, "id")
         self.model.setHeaderData(0, Qt.Horizontal, "Ticket")

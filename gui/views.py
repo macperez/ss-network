@@ -21,15 +21,16 @@ log = logging.getLogger('simpleDevelopment')
 class ApplicationTableView(object):
     def __init__(self, view):
         self.view = view
+
     def getView(self):
         return self.view
 
     def _formatTable(self):
         maxcols = self.view.horizontalHeader().count()
         log.debug("Number of columns displayed {}".format(maxcols))
-        for col in range (maxcols):
-            self.view.horizontalHeader().setSectionResizeMode(col,
-                                                         QHeaderView.Stretch)
+        for col in range(maxcols):
+            self.view.horizontalHeader().\
+                setSectionResizeMode(col, QHeaderView.Stretch)
 
 
 class CustomNetworkView(ApplicationTableView):
@@ -41,17 +42,28 @@ class CustomNetworkView(ApplicationTableView):
         self.view.setModel(self.cnmodel.getModel())
         self.view.setItemDelegate(QSqlRelationalDelegate(self.view))
         self._formatTable()
-        super().__init__(self.view)
         self.view.selectionModel().selectionChanged.connect(self.selChanged)
+        self.dependantView = parent.cncview
+        super().__init__(self.view)
+
 
     def _formatTable(self):
         super()._formatTable()
         self.view.hideColumn(0)
 
     def selChanged(self, event, selected):
-        import ipdb; ipdb.set_trace()
-        log.debug(selected)
+        if event.count() == 1:
+            index = event.indexes()[0]
+            rowidx = index.row()
+            cn_id = self.cnmodel.getModel().index(rowidx, 0).data()
+            cn_name = self.cnmodel.getModel().index(rowidx, 1).data()
+            self.parent.connection.open()
+            dependant_model = self.dependantView.cnmodel.getModel()
+            dependant_model.setFilter("customnetwork_id={}".format(cn_id))
+            self.parent.connection.close()
+            # tablemodel->setFilter("art_nr LIKE '13%'");
 
+            log.debug("The cn selected is {}:{}".format(cn_id, cn_name))
 
 
 class CustomNetworkComponentView(ApplicationTableView):

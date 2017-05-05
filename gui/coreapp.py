@@ -135,8 +135,8 @@ class ContainerWidget(QWidget):
         super().__init__()
         self.parent = main_window
         self.connection = self.parent.connection
-        self.cnview = views.CustomNetworkView(self)
         self.cncview = views.CustomNetworkComponentView(self)
+        self.cnview = views.CustomNetworkView(self)
         self.initUI()
 
     def initUI(self):
@@ -148,8 +148,6 @@ class ContainerWidget(QWidget):
         bottom.setFrameShape(QFrame.StyledPanel)
         splitter1 = QSplitter(Qt.Horizontal)
         self.compmodel = models.Components(self.connection)
-
-
         self._setlayoutTopleft(topleft)
         splitter1.addWidget(topleft)
         splitter1.addWidget(self.cnview.getView())
@@ -180,7 +178,6 @@ class ContainerWidget(QWidget):
         horizontal_layout.addWidget(self.cncview.getView())
         horizontal_layout.addLayout(vertical_layout)
         topleft_frame.setLayout(horizontal_layout)
-
 
 
 def startapp():
