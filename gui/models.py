@@ -23,6 +23,7 @@ class CustomNetwork(object):
     def getModel(self):
         return self.model
 
+     
 
 class Components(object):
 

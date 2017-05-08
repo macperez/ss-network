@@ -137,6 +137,8 @@ class ContainerWidget(QWidget):
         self.connection = self.parent.connection
         self.cncview = views.CustomNetworkComponentView(self)
         self.cnview = views.CustomNetworkView(self)
+        self.editbutton = None
+        self.deletebutton = None
         self.initUI()
 
     def initUI(self):
@@ -167,18 +169,21 @@ class ContainerWidget(QWidget):
 
         newbutton = QPushButton()
         newbutton.setIcon(QIcon('gui/images/plus-sign24.png'))
-        editbutton = QPushButton()
-        editbutton.setIcon(QIcon('gui/images/edit24.png'))
-        deletebutton = QPushButton()
-        deletebutton.setIcon(QIcon('gui/images/delete24.png'))
+        self.editbutton = QPushButton()
+        self.editbutton.setIcon(QIcon('gui/images/edit24.png'))
+        self.editbutton.setEnabled(False)
+        self.deletebutton = QPushButton()
+        self.deletebutton.setIcon(QIcon('gui/images/delete24.png'))
+        self.deletebutton.setEnabled(False)
+        
 
         newbutton.clicked.connect(self.newbutton_action)
         # btn2.clicked.connect(self.buttonClicked)
 
 
         vertical_layout.addWidget(newbutton)
-        vertical_layout.addWidget(editbutton)
-        vertical_layout.addWidget(deletebutton)
+        vertical_layout.addWidget(self.editbutton)
+        vertical_layout.addWidget(self.deletebutton)
         horizontal_layout.addWidget(self.cncview.getView())
         horizontal_layout.addLayout(vertical_layout)
         topleft_frame.setLayout(horizontal_layout)
