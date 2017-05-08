@@ -10,7 +10,7 @@ created: May 3,  2017
 
 import logging
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableView, QHeaderView
+from PyQt5.QtWidgets import QTableView, QHeaderView, QAbstractItemView
 from PyQt5.QtSql import QSqlRelationalDelegate
 
 from gui import models
@@ -21,7 +21,8 @@ log = logging.getLogger('simpleDevelopment')
 class ApplicationTableView(object):
     def __init__(self, view):
         self.view = view
-
+        self.view.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # self.view.setFocusPolicy(Qt.StrongFocus)
     def getView(self):
         return self.view
 
@@ -41,9 +42,11 @@ class CustomNetworkView(ApplicationTableView):
         self.cnmodel = models.CustomNetwork(self.parent.connection)
         self.view.setModel(self.cnmodel.getModel())
         self.view.setItemDelegate(QSqlRelationalDelegate(self.view))
-        self._formatTable()
         self.view.selectionModel().selectionChanged.connect(self.selChanged)
+        self.view.doubleClicked.connect(self.manageDoubleClick)
+        self._formatTable()
         self.dependantView = parent.cncview
+        self.customnetwork_row_selected = -1
         super().__init__(self.view)
 
 
@@ -51,19 +54,28 @@ class CustomNetworkView(ApplicationTableView):
         super()._formatTable()
         self.view.hideColumn(0)
 
+    def manageDoubleClick(self):
+        log.debug("doubleClick detected")
+
     def selChanged(self, event, selected):
-        if event.count() == 1:
-            index = event.indexes()[0]
+        indexes = event.indexes()
+        self.parent.deletebutton.setEnabled(True)
+        self.parent.editbutton.setEnabled(True)
+        if indexes:
+            index = indexes[0]
             rowidx = index.row()
+            self.view.selectRow(rowidx)
             cn_id = self.cnmodel.getModel().index(rowidx, 0).data()
             cn_name = self.cnmodel.getModel().index(rowidx, 1).data()
             self.parent.connection.open()
             dependant_model = self.dependantView.cnmodel.getModel()
             dependant_model.setFilter("customnetwork_id={}".format(cn_id))
-            self.parent.connection.close()
-            # tablemodel->setFilter("art_nr LIKE '13%'");
 
-            log.debug("The cn selected is {}:{}".format(cn_id, cn_name))
+            self.parent.connection.close()
+            self.customnetwork_row_selected = rowidx
+
+    def remove(self):
+        self.model.removeRows(customnetwork_row_selected, 1)
 
 
 class CustomNetworkComponentView(ApplicationTableView):
