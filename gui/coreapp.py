@@ -175,11 +175,11 @@ class ContainerWidget(QWidget):
         self.deletebutton = QPushButton()
         self.deletebutton.setIcon(QIcon('gui/images/delete24.png'))
         self.deletebutton.setEnabled(False)
-        
 
-        newbutton.clicked.connect(self.newbutton_action)
+
+        newbutton.clicked.connect(self.new_customnetwork_action)
         # btn2.clicked.connect(self.buttonClicked)
-
+        self.deletebutton.clicked.connect(self.delete_action)
 
         vertical_layout.addWidget(newbutton)
         vertical_layout.addWidget(self.editbutton)
@@ -188,10 +188,13 @@ class ContainerWidget(QWidget):
         horizontal_layout.addLayout(vertical_layout)
         topleft_frame.setLayout(horizontal_layout)
 
-    def newbutton_action(self):
+    def new_customnetwork_action(self):
         log.debug("new custom network action event")
         date, time, ok = dialogs.Dialog.getDateTime(self)
 
+    def delete_action(self):
+        log.debug("delete custom network action event")
+        self.cnview.remove()
 
 def startapp():
     app = QApplication(sys.argv)

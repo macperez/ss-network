@@ -74,7 +74,7 @@ class CustomNetworkView(ApplicationTableView):
             self.customnetwork_row_selected = rowidx
 
     def remove(self):
-        self.model.removeRows(customnetwork_row_selected, 1)
+        self.cnmodel.getModel().removeRows(self.customnetwork_row_selected, 1)
 
 
 class CustomNetworkComponentView(ApplicationTableView):
