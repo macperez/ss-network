@@ -23,9 +23,9 @@ from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QWidget,\
 from PyQt5.QtGui import QIcon
 
 
-from gui import models, views
+from gui import models, views, dialogs, connection
+
 import datacollector
-from gui import connection
 
 log = logging.getLogger('simpleDevelopment')
 
@@ -165,12 +165,16 @@ class ContainerWidget(QWidget):
         horizontal_layout = QHBoxLayout()
         vertical_layout = QVBoxLayout()
 
-        newbutton= QPushButton()
+        newbutton = QPushButton()
         newbutton.setIcon(QIcon('gui/images/plus-sign24.png'))
         editbutton = QPushButton()
         editbutton.setIcon(QIcon('gui/images/edit24.png'))
         deletebutton = QPushButton()
         deletebutton.setIcon(QIcon('gui/images/delete24.png'))
+
+        newbutton.clicked.connect(self.newbutton_action)
+        # btn2.clicked.connect(self.buttonClicked)
+
 
         vertical_layout.addWidget(newbutton)
         vertical_layout.addWidget(editbutton)
@@ -178,6 +182,10 @@ class ContainerWidget(QWidget):
         horizontal_layout.addWidget(self.cncview.getView())
         horizontal_layout.addLayout(vertical_layout)
         topleft_frame.setLayout(horizontal_layout)
+
+    def newbutton_action(self):
+        log.debug("new custom network action event")
+        date, time, ok = dialogs.Dialog.getDateTime(self)
 
 
 def startapp():

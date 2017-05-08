@@ -27,7 +27,6 @@ class ApplicationTableView(object):
 
     def _formatTable(self):
         maxcols = self.view.horizontalHeader().count()
-        log.debug("Number of columns displayed {}".format(maxcols))
         for col in range(maxcols):
             self.view.horizontalHeader().\
                 setSectionResizeMode(col, QHeaderView.Stretch)
@@ -46,7 +45,6 @@ class CustomNetworkView(ApplicationTableView):
         self.dependantView = parent.cncview
         super().__init__(self.view)
 
-
     def _formatTable(self):
         super()._formatTable()
         self.view.hideColumn(0)
@@ -61,9 +59,7 @@ class CustomNetworkView(ApplicationTableView):
             dependant_model = self.dependantView.cnmodel.getModel()
             dependant_model.setFilter("customnetwork_id={}".format(cn_id))
             self.parent.connection.close()
-            # tablemodel->setFilter("art_nr LIKE '13%'");
 
-            log.debug("The cn selected is {}:{}".format(cn_id, cn_name))
 
 
 class CustomNetworkComponentView(ApplicationTableView):
