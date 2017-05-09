@@ -2,14 +2,15 @@
 import os
 import logging
 import config
+from os.path import expanduser
 
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery
 
 
 log = logging.getLogger('simpleDevelopment')
-
-PATH_TO_FILE = os.path.join(os.getenv('HOME'), config.DATABASE_NAME)
+HOME = expanduser("~")
+PATH_TO_FILE = os.path.join(HOME, config.DATABASE_NAME)
 
 
 def create_tables():
