@@ -190,7 +190,10 @@ class ContainerWidget(QWidget):
 
     def new_customnetwork_action(self):
         log.debug("new custom network action event")
-        date, time, ok = dialogs.Dialog.getDateTime(self)
+        name, description, tickets ,ok = \
+            dialogs.CreateCustomNetworkDialog.getData(self)
+        if ok:
+            self.cnview.cnmodel.create(name,description)
 
     def delete_action(self):
         log.debug("delete custom network action event")

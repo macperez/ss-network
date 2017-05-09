@@ -23,7 +23,18 @@ class CustomNetwork(object):
     def getModel(self):
         return self.model
 
-     
+    def create(self, name, description):
+        query = QSqlQuery()
+        last = self.model.rowCount()
+        id = last + 1
+        self.connection.open()
+        query_str = "insert into customnetwork values ({}, '{}', '{}');"\
+            .format(id, name, description)
+        log.debug("Query: {}".format(query_str))
+        query.exec_(query_str)
+        self.model.select()
+
+        self.connection.close()
 
 class Components(object):
 

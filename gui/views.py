@@ -22,7 +22,6 @@ class ApplicationTableView(object):
     def __init__(self, view):
         self.view = view
         self.view.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # self.view.setFocusPolicy(Qt.StrongFocus)
 
     def getView(self):
         return self.view
