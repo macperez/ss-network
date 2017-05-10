@@ -5,32 +5,35 @@ import datetime as dt
 from PyQt5.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QGridLayout, QGroupBox,
                              QHBoxLayout, QLabel, QLineEdit,
-                             QSpinBox, QTextEdit,QScrollArea,
-                             QVBoxLayout, QWidget, QStyle)
+                             QSpinBox, QTextEdit, QVBoxLayout,
+                             QWidget, QStyle)
 
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QRegExpValidator, QValidator
 from PyQt5 import QtSql
 
+
 log = logging.getLogger('simpleDevelopment')
 
 
-class CustomNetworkNameValidator(QValidator):
+class CustomNetworkNameValidator():
     def __init__(self, connection):
         self.connection = connection
-        super().__init__()
 
-    def validate(self, text, position):
-        log.debug("Trying to validate query")
+    def validate(self, text):
+        if text is None or text == '':
+            return QValidator.Invalid, 'The field cannot be empty'
+
         self.connection.open()
-        query = QtSql.QSqlQuery('select id from customnetwork where '
-                                'name = "{}"'.format(text))
-
-        if query.size() > 0 or text == '_INCORRECT_':
-            result = QValidator.Invalid, text, position
+        query = QtSql.QSqlQuery()
+        text_query = 'select id from customnetwork where name = "{}";' \
+            .format(text)
+        query.exec_(text_query)
+        if query.next():
+            result = QValidator.Invalid, 'This name alreay exists'
         else:
             log.debug("Valid name {}".format(text))
-            result = QValidator.Acceptable, text, position
+            result = QValidator.Acceptable, 'ok'
 
         self.connection.close()
 
@@ -42,21 +45,37 @@ class CreateCustomNetworkDialog(QDialog):
     NumButtons = 4
 
     def __init__(self, parent):
-        super(CreateCustomNetworkDialog, self).__init__(parent)
+        super().__init__(parent)
         self.parent = parent
         self.createFormGroupBox()
-        log.debug("Opening dialog")
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
-                                     QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
+                                          QDialogButtonBox.Cancel)
+
+        self.buttonBox.accepted.connect(self.accepting)
+        self.buttonBox.rejected.connect(self.reject)
 
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.formGroupBox)
-        mainLayout.addWidget(buttonBox)
+        mainLayout.addWidget(self.buttonBox)
         self.setLayout(mainLayout)
         self.setWindowTitle("New CustomNetwork Form")
 
+    def accepting(self):
+        # validator = self.name.validator()
+        ok_button = self.buttonBox.buttons()[0]
+        validator = CustomNetworkNameValidator(self.parent.connection)
+        state = validator.validate(self.name.text())[0]
+        # state = validator.validate(self.name.text(), 0)[0]
+        if state == QValidator.Acceptable:
+            color = 'white'
+            ok_button.setEnabled(True)
+        else:
+            color = '#f6989d'  # red
+            ok_button.setEnabled(False)
+        self.name.setStyleSheet("background-color: {};".format(color))
+        # return state == QValidator.Acceptable
+        if state == QValidator.Acceptable:
+            self.done(QDialog.Accepted)
 
     def createFormGroupBox(self):
         self.formGroupBox = QGroupBox("Data:")
@@ -64,14 +83,8 @@ class CreateCustomNetworkDialog(QDialog):
         self.description = QLineEdit()
         self.tickets = QTextEdit()
 
-        # reg_ex = QRegExp("[0-9]+.?[0-9]{,2}")
-        # input_validator = QRegExpValidator(reg_ex, self.name)
-        self.name.setValidator(CustomNetworkNameValidator(
-                               self.parent.connection))
-
         self.name.setPlaceholderText('Enter a name')
         self.name.textChanged.connect(self.check_state)
-
         layout = QFormLayout()
         layout.addRow(QLabel("Name:"), self.name)
         layout.addRow(QLabel("Description:"), self.description)
@@ -79,21 +92,11 @@ class CreateCustomNetworkDialog(QDialog):
         self.formGroupBox.setLayout(layout)
 
     def check_state(self, event):
-        sender = self.sender()
-        validator = sender.validator()
-        state = validator.validate(sender.text(), 0)[0]
-        # FIXME: esto no está funcionando
-        if state == QValidator.Acceptable:
-            log.debug(state)
-            color = 'white' # green
-        elif state == QValidator.Intermediate:
-            color = '#fff79a' # yellow
-        else:
-            log.debug(state)
-            color = '#f6989d' # red
+        ok_button = self.buttonBox.buttons()[0]
+        self.name.setStyleSheet("background-color: white;")
+        ok_button.setEnabled(True)
+    #  static method to create the dialog and return (date, time, accepted)
 
-        sender.setStyleSheet("background-color: {};".format(color))
-    # static method to create the dialog and return (date, time, accepted)
     @staticmethod
     def getData(parent=None):
 
@@ -103,43 +106,6 @@ class CreateCustomNetworkDialog(QDialog):
                 dialog.description.text(),
                 dialog.tickets.toPlainText(),
                 result == QDialog.Accepted)
-
-
-
-class Example(QWidget):
-
-    def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
-
-        self.initUI()
-
-    def initUI(self):
-
-        title = QLabel('Title')
-        author = QLabel('Author')
-        review = QLabel('Review')
-
-        titleEdit = QLineEdit()
-        authorEdit = QLineEdit()
-        reviewEdit = QTextEdit()
-
-        grid = QGridLayout()
-        grid.setSpacing(10)
-
-        grid.addWidget(title, 1, 0)
-        grid.addWidget(titleEdit, 1, 1)
-
-        grid.addWidget(author, 2, 0)
-        grid.addWidget(authorEdit, 2, 1)
-
-        grid.addWidget(review, 3, 0)
-        grid.addWidget(reviewEdit, 3, 1, 5, 1)
-
-        self.setLayout(grid)
-
-        self.setGeometry(300, 300, 350, 300)
-        self.setWindowTitle('Review')
 
 
 if __name__ == '__main__':

@@ -36,6 +36,7 @@ class CustomNetwork(object):
 
         self.connection.close()
 
+
 class Components(object):
 
     def __init__(self, connection):
