@@ -175,8 +175,6 @@ class ContainerWidget(QWidget):
         self.deletebutton = QPushButton()
         self.deletebutton.setIcon(QIcon('gui/images/delete24.png'))
         self.deletebutton.setEnabled(False)
-
-
         newbutton.clicked.connect(self.new_customnetwork_action)
         # btn2.clicked.connect(self.buttonClicked)
         self.deletebutton.clicked.connect(self.delete_action)
@@ -190,14 +188,16 @@ class ContainerWidget(QWidget):
 
     def new_customnetwork_action(self):
         log.debug("new custom network action event")
-        name, description, tickets ,ok = \
+        name, description, tickets, ok = \
             dialogs.CreateCustomNetworkDialog.getData(self)
         if ok:
-            self.cnview.cnmodel.create(name,description)
+            customnetwork_id = self.cnview.cnmodel.create(name, description)
+            self.cncview.cnmodel.create(customnetwork_id, tickets)
 
     def delete_action(self):
         log.debug("delete custom network action event")
         self.cnview.remove()
+
 
 def startapp():
     app = QApplication(sys.argv)

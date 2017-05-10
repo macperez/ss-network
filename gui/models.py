@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QTableView, QHeaderView, QTreeView
 
 log = logging.getLogger('simpleDevelopment')
 
+GENERIC_SECTOR_CODE_ID = 1000
 
 class CustomNetwork(object):
 
@@ -24,6 +25,7 @@ class CustomNetwork(object):
         return self.model
 
     def create(self, name, description):
+        # TODO: capturar excepciones de error que se pueden dar
         query = QSqlQuery()
         last = self.model.rowCount()
         id = last + 1
@@ -33,8 +35,9 @@ class CustomNetwork(object):
         log.debug("Query: {}".format(query_str))
         query.exec_(query_str)
         self.model.select()
-
         self.connection.close()
+        # FIXME: hacer una query primero y construir un objeto
+        return id
 
 
 class Components(object):
@@ -52,3 +55,46 @@ class Components(object):
 
     def getModel(self):
         return self.model
+
+    def create(self, customnetwork_id, tickets):
+        # TODO: capturar excepciones de error que se pueden dar
+        log.debug(tickets)
+        query = QSqlQuery()
+        last = self.model.rowCount()
+        id = last + 1
+        self.connection.open()
+        for ticket in tickets:
+            comp_id = self._insert_component_table(query, ticket)
+            ok = self.\
+                _insert_customernetwork_component_table(query,
+                                                        customnetwork_id,
+                                                        comp_id)
+
+        self.model.select()
+        self.connection.close()
+
+        return id
+
+    def _insert_customernetwork_component_table(self, query, customnetwork_id,
+                                                comp_id):
+        query.prepare('insert into customnetwork_component values (?,?);')
+        query.addBindValue(comp_id)
+        query.addBindValue(customnetwork_id)
+        return query.exec_()
+
+    def _insert_component_table(self, query, ticket):
+        ok = query.exec_("select id from component;")
+        id = 0
+        if ok:
+            query.last()
+            last_id = int(query.value(0))
+            id = last_id + 1
+        query.prepare('insert into component values (?,?,?,?);')
+        query.addBindValue(id)
+        query.addBindValue(ticket)
+        query.addBindValue('_generic_description_')
+        query.addBindValue(GENERIC_SECTOR_CODE_ID)
+        if query.exec_():
+            return id
+        else:
+            return -1

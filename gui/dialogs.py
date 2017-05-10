@@ -61,7 +61,7 @@ class CreateCustomNetworkDialog(QDialog):
         self.setWindowTitle("New CustomNetwork Form")
 
     def accepting(self):
-        # validator = self.name.validator()
+        # TODO: La validación del resto de campos falta.
         ok_button = self.buttonBox.buttons()[0]
         validator = CustomNetworkNameValidator(self.parent.connection)
         state = validator.validate(self.name.text())[0]
@@ -73,7 +73,6 @@ class CreateCustomNetworkDialog(QDialog):
             color = '#f6989d'  # red
             ok_button.setEnabled(False)
         self.name.setStyleSheet("background-color: {};".format(color))
-        # return state == QValidator.Acceptable
         if state == QValidator.Acceptable:
             self.done(QDialog.Accepted)
 
@@ -102,9 +101,11 @@ class CreateCustomNetworkDialog(QDialog):
 
         dialog = CreateCustomNetworkDialog(parent)
         result = dialog.exec_()
+        tickets = dialog.tickets.toPlainText().split()
+        # TODO: aquí necesita validación extra, no sólo un simple split()
         return (dialog.name.text(),
                 dialog.description.text(),
-                dialog.tickets.toPlainText(),
+                tickets,
                 result == QDialog.Accepted)
 
 
