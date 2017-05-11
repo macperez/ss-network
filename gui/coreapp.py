@@ -197,17 +197,16 @@ class ContainerWidget(QWidget):
     def edit_customnetwork_action(self):
         log.debug("edit custom network action event")
         customnetwork_id = self.cnview.get_selected_custom_network()
-        name, description, ticket, ok = \
+        name, description, components, ok = \
             dialogs.CustomNetworkFormDialog.getData(self, customnetwork_id)
         if ok:
             # FIXME : tienes que editar
-            ok = self.cnview.cnmodel.update(customnetwork_id, name, description)
-            self.cncview.cnmodel.update_components(customnetwork_id, components)
-
+            ok = self.cnview.cnmodel.update(customnetwork_id,
+                                            name, description)
+            self.cncview.cnmodel.update_components(customnetwork_id,
+                                                   components)
 
     def delete_action(self):
-        log.debug("delete custom network action event")
-
         self.cnview.remove()
 
 

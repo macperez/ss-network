@@ -17,28 +17,32 @@ from gui.models import CustomNetwork
 
 log = logging.getLogger('simpleDevelopment')
 
+CREATION, EDITION, READ = 0, 1, 2
+
 
 class CustomNetworkNameValidator():
     def __init__(self, connection):
         self.connection = connection
 
-    def validate(self, text):
+    def validate(self, text, mode=CREATION):
         if text is None or text == '':
             return QValidator.Invalid, 'The field cannot be empty'
 
-        self.connection.open()
-        query = QtSql.QSqlQuery()
-        text_query = 'select id from customnetwork where name = "{}";' \
-            .format(text)
-        query.exec_(text_query)
-        if query.next():
-            result = QValidator.Invalid, 'This name alreay exists'
+        if mode == CREATION:
+            self.connection.open()
+            query = QtSql.QSqlQuery()
+            text_query = 'select id from customnetwork where name = "{}";' \
+                .format(text)
+            query.exec_(text_query)
+            if query.next():
+                result = QValidator.Invalid, 'This name alreay exists'
+            else:
+                log.debug("Valid name {}".format(text))
+                result = QValidator.Acceptable, 'ok'
+
+            self.connection.close()
         else:
-            log.debug("Valid name {}".format(text))
             result = QValidator.Acceptable, 'ok'
-
-        self.connection.close()
-
         return result
 
 
@@ -70,7 +74,8 @@ class CustomNetworkFormDialog(QDialog):
         self.description = QLineEdit(self.object.get('description', ''))
         if 'components' in self.object and len(self.object['components']) > 0:
             tickets_text = \
-            ' '.join([comp['ticket'] for comp in self.object['components']])
+                ' '.join([comp['ticket']
+                         for comp in self.object['components']])
         else:
             tickets_text = ''
 
@@ -88,8 +93,11 @@ class CustomNetworkFormDialog(QDialog):
         # TODO: La validación del resto de campos falta.
         ok_button = self.buttonBox.buttons()[0]
         validator = CustomNetworkNameValidator(self.parent.connection)
-        state = validator.validate(self.name.text())[0]
-        # state = validator.validate(self.name.text(), 0)[0]
+        if len(self.object) > 0:
+            state = validator.validate(self.name.text(), EDITION)[0]
+        else:
+            state = validator.validate(self.name.text(), CREATION)[0]
+
         if state == QValidator.Acceptable:
             color = 'white'
             ok_button.setEnabled(True)

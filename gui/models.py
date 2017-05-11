@@ -8,6 +8,7 @@ log = logging.getLogger('simpleDevelopment')
 
 GENERIC_SECTOR_CODE_ID = 1000
 
+
 class CustomNetwork(object):
 
     def __init__(self, connection):
@@ -55,7 +56,6 @@ class CustomNetwork(object):
         self.connection.close()
         return ok
 
-
     def delete_cn(self, customnetwork_id_selected):
         query = QSqlQuery()
         self.connection.open()
@@ -73,7 +73,8 @@ class CustomNetwork(object):
         cnc_object = {}
         query = QSqlQuery()
         connection.open()
-        query.prepare('select id, name, description from customnetwork where id = ?;')
+        query.prepare('SELECT id, name, description from customnetwork '
+                      'WHERE id = ?;')
         query.addBindValue(customnetwork_id)
         if query.exec_():
             query.next()
@@ -81,11 +82,11 @@ class CustomNetwork(object):
             cnc_object['name'] = str(query.value(1))
             cnc_object['description'] = str(query.value(2))
 
-        query_str = """select c.id, c.ticket, n.id, n.name
-        from customnetwork n, component c,
-        customnetwork_component nc where
-        c.id = nc.component_id and
-        n.id = nc.customnetwork_id and
+        query_str = """SELECT c.id, c.ticket, n.id, n.name
+        FROM customnetwork n, component c,
+        customnetwork_component nc WHERE
+        c.id = nc.component_id AND
+        n.id = nc.customnetwork_id AND
         n.id = ?;"""
 
         log.debug("QUERY: {}".format(query_str))
@@ -166,14 +167,32 @@ class Components(object):
         # TODO: capturar excepciones de error que se pueden dar
         query = QSqlQuery()
         self.connection.open()
-        sql = """UPDATE customnetwork SET name = ?, description = ?
-                 WHERE id = ?;
+        sql = """DELETE FROM customnetwork_component
+                 WHERE customnetwork_id = ?;
               """
         query.prepare(sql)
-        query.addBindValue(name)
-        query.addBindValue(description)
         query.addBindValue(id)
         ok = query.exec_()
+        if ok:
+            for ticket in tickets:
+                sql = "SELECT id, ticket FROM component WHERE ticket = '{}';"\
+                    .format(ticket)
+                if query.exec_() and query.next():
+                    component_id = int(query.value(0))
+                    query.clear()
+                    sql = """INSERT into customnetwork_component
+                    VALUES (?, ?);
+                    """
+                    query.prepare(sql)
+                    query.addBindValue(component_id)
+                    query.exec_()
+                else:
+                    comp_id = self._insert_component_table(query, ticket)
+                    ok = self.\
+                        _insert_customernetwork_component_table(query,
+                                                                id,
+                                                                comp_id)
+
         self.model.select()
         self.connection.close()
         return ok

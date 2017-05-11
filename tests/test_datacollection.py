@@ -12,7 +12,6 @@ class YahooFinanceTestCase(unittest.TestCase):
          self.connector = YahooConnector('IBEX35')
 
     def test_get_IBEX_components(self):
-        import ipdb; ipdb.set_trace()
         components = self.connector.get_components()
 
         # En el caso del IBEX tenemos que tener 35 componentes
