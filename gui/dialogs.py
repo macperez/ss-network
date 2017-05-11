@@ -12,6 +12,8 @@ from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QRegExpValidator, QValidator
 from PyQt5 import QtSql
 
+from gui.models import CustomNetwork
+
 
 log = logging.getLogger('simpleDevelopment')
 
@@ -44,9 +46,11 @@ class CreateCustomNetworkDialog(QDialog):
     NumGridRows = 3
     NumButtons = 4
 
-    def __init__(self, parent):
+    def __init__(self, parent, customnetwork_id):
         super().__init__(parent)
         self.parent = parent
+        self.object = CustomNetwork.getObject(parent.connection, customnetwork_id)
+
         self.createFormGroupBox()
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
                                           QDialogButtonBox.Cancel)
@@ -59,6 +63,24 @@ class CreateCustomNetworkDialog(QDialog):
         mainLayout.addWidget(self.buttonBox)
         self.setLayout(mainLayout)
         self.setWindowTitle("New CustomNetwork Form")
+
+    def createFormGroupBox(self):
+        self.formGroupBox = QGroupBox("Data:")
+        self.name = QLineEdit(self.object['name'])
+        self.description = QLineEdit(self.object['description'])
+        tickets_text = \
+        ' '.join([comp['ticket'] for comp in self.object['components']])
+
+
+        self.tickets = QTextEdit(tickets_text)
+
+        self.name.setPlaceholderText('Enter a name')
+        self.name.textChanged.connect(self.check_state)
+        layout = QFormLayout()
+        layout.addRow(QLabel("Name:"), self.name)
+        layout.addRow(QLabel("Description:"), self.description)
+        layout.addRow(QLabel("Tickets:"), self.tickets)
+        self.formGroupBox.setLayout(layout)
 
     def accepting(self):
         # TODO: La validación del resto de campos falta.
@@ -76,19 +98,6 @@ class CreateCustomNetworkDialog(QDialog):
         if state == QValidator.Acceptable:
             self.done(QDialog.Accepted)
 
-    def createFormGroupBox(self):
-        self.formGroupBox = QGroupBox("Data:")
-        self.name = QLineEdit()
-        self.description = QLineEdit()
-        self.tickets = QTextEdit()
-
-        self.name.setPlaceholderText('Enter a name')
-        self.name.textChanged.connect(self.check_state)
-        layout = QFormLayout()
-        layout.addRow(QLabel("Name:"), self.name)
-        layout.addRow(QLabel("Description:"), self.description)
-        layout.addRow(QLabel("Tickets:"), self.tickets)
-        self.formGroupBox.setLayout(layout)
 
     def check_state(self, event):
         ok_button = self.buttonBox.buttons()[0]
@@ -97,9 +106,9 @@ class CreateCustomNetworkDialog(QDialog):
     #  static method to create the dialog and return (date, time, accepted)
 
     @staticmethod
-    def getData(parent=None):
+    def getData(parent=None, customnetwork_id=-1):
 
-        dialog = CreateCustomNetworkDialog(parent)
+        dialog = CreateCustomNetworkDialog(parent, customnetwork_id)
         result = dialog.exec_()
         tickets = dialog.tickets.toPlainText().split()
         # TODO: aquí necesita validación extra, no sólo un simple split()

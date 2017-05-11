@@ -49,6 +49,41 @@ class CustomNetwork(object):
         self.connection.close()
         return ok
 
+    @staticmethod
+    def getObject(connection, customnetwork_id=-1):
+        cnc_object = {}
+        query = QSqlQuery()
+        connection.open()
+        query.prepare('select id, name, description from customnetwork where id = ?;')
+        query.addBindValue(customnetwork_id)
+        if query.exec_():
+            query.next()
+            cnc_object['id'] = int(query.value(0))
+            cnc_object['name'] = str(query.value(1))
+            cnc_object['description'] = str(query.value(2))
+
+        query_str = """select c.id, c.ticket, n.id, n.name
+        from customnetwork n, component c,
+        customnetwork_component nc where
+        c.id = nc.component_id and
+        n.id = nc.customnetwork_id and
+        n.id = ?;"""
+
+        log.debug("QUERY: {}".format(query_str))
+        query.prepare(query_str)
+        query.addBindValue(customnetwork_id)
+        cnc_object['components'] = []
+        if query.exec_():
+            while query.next():
+                comp = {}
+                comp['id'] = int(query.value(0))
+                comp['ticket'] = str(query.value(1))
+                cnc_object['components'].append(comp)
+        connection.close()
+
+        return cnc_object
+
+
 
 class Components(object):
 
@@ -60,7 +95,6 @@ class Components(object):
         self.model.setRelation(0, QSqlRelation('component', 'id', 'ticket'))
         self.model.setRelation(1, QSqlRelation('customnetwork', 'id', 'name'))
         self.model.select()
-        # self.model.setHeaderData(0, Qt.Horizontal, "id")
         self.model.setHeaderData(0, Qt.Horizontal, "Ticket")
 
     def getModel(self):

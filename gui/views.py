@@ -85,7 +85,8 @@ class CustomNetworkView(ApplicationTableView):
             if ok:
                 self.cnmodel.delete_cn(self.customnetwork_id_selected)
 
-
+    def get_selected_custom_network(self):
+        return self.customnetwork_id_selected
 
 class CustomNetworkComponentView(ApplicationTableView):
 
