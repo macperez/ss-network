@@ -42,7 +42,7 @@ class CustomNetworkNameValidator():
         return result
 
 
-class CreateCustomNetworkDialog(QDialog):
+class CustomNetworkFormDialog(QDialog):
     NumGridRows = 3
     NumButtons = 4
 
@@ -66,11 +66,13 @@ class CreateCustomNetworkDialog(QDialog):
 
     def createFormGroupBox(self):
         self.formGroupBox = QGroupBox("Data:")
-        self.name = QLineEdit(self.object['name'])
-        self.description = QLineEdit(self.object['description'])
-        tickets_text = \
-        ' '.join([comp['ticket'] for comp in self.object['components']])
-
+        self.name = QLineEdit(self.object.get('name', ''))
+        self.description = QLineEdit(self.object.get('description', ''))
+        if 'components' in self.object and len(self.object['components']) > 0:
+            tickets_text = \
+            ' '.join([comp['ticket'] for comp in self.object['components']])
+        else:
+            tickets_text = ''
 
         self.tickets = QTextEdit(tickets_text)
 
@@ -108,7 +110,7 @@ class CreateCustomNetworkDialog(QDialog):
     @staticmethod
     def getData(parent=None, customnetwork_id=-1):
 
-        dialog = CreateCustomNetworkDialog(parent, customnetwork_id)
+        dialog = CustomNetworkFormDialog(parent, customnetwork_id)
         result = dialog.exec_()
         tickets = dialog.tickets.toPlainText().split()
         # TODO: aquí necesita validación extra, no sólo un simple split()

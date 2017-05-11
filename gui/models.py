@@ -39,6 +39,23 @@ class CustomNetwork(object):
         # FIXME: hacer una query primero y construir un objeto
         return id
 
+    def update(self,id, name, description):
+        # TODO: capturar excepciones de error que se pueden dar
+        query = QSqlQuery()
+        self.connection.open()
+        sql = """UPDATE customnetwork SET name = ?, description = ?
+                 WHERE id = ?;
+              """
+        query.prepare(sql)
+        query.addBindValue(name)
+        query.addBindValue(description)
+        query.addBindValue(id)
+        ok = query.exec_()
+        self.model.select()
+        self.connection.close()
+        return ok
+
+
     def delete_cn(self, customnetwork_id_selected):
         query = QSqlQuery()
         self.connection.open()
@@ -51,6 +68,8 @@ class CustomNetwork(object):
 
     @staticmethod
     def getObject(connection, customnetwork_id=-1):
+        if customnetwork_id < 0:
+            return {}
         cnc_object = {}
         query = QSqlQuery()
         connection.open()
@@ -142,6 +161,22 @@ class Components(object):
             return id
         else:
             return -1
+
+    def update_components(self, id, tickets):
+        # TODO: capturar excepciones de error que se pueden dar
+        query = QSqlQuery()
+        self.connection.open()
+        sql = """UPDATE customnetwork SET name = ?, description = ?
+                 WHERE id = ?;
+              """
+        query.prepare(sql)
+        query.addBindValue(name)
+        query.addBindValue(description)
+        query.addBindValue(id)
+        ok = query.exec_()
+        self.model.select()
+        self.connection.close()
+        return ok
 
     def delete_cnc(self, customnetwork_id_selected):
         query = QSqlQuery()
