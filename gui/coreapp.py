@@ -196,6 +196,7 @@ class ContainerWidget(QWidget):
 
     def delete_action(self):
         log.debug("delete custom network action event")
+        
         self.cnview.remove()
 
 

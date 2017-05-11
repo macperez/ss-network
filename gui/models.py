@@ -39,6 +39,16 @@ class CustomNetwork(object):
         # FIXME: hacer una query primero y construir un objeto
         return id
 
+    def delete_cn(self, customnetwork_id_selected):
+        query = QSqlQuery()
+        self.connection.open()
+        query.prepare('delete from customnetwork where id = ?;')
+        query.addBindValue(customnetwork_id_selected)
+        ok = query.exec_()
+        self.model.select()
+        self.connection.close()
+        return ok
+
 
 class Components(object):
 
@@ -98,3 +108,13 @@ class Components(object):
             return id
         else:
             return -1
+
+    def delete_cnc(self, customnetwork_id_selected):
+        query = QSqlQuery()
+        self.connection.open()
+        query.prepare('delete from customnetwork_component where customnetwork_id = ?;')
+        query.addBindValue(customnetwork_id_selected)
+        ok = query.exec_()
+        self.model.select()
+        self.connection.close()
+        return ok
