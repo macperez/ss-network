@@ -183,10 +183,8 @@ class ContainerWidget(QWidget):
         self.deletebutton = QPushButton()
         self.deletebutton.setIcon(QIcon('gui/images/delete24.png'))
         self.deletebutton.setEnabled(False)
-
-
         newbutton.clicked.connect(self.new_customnetwork_action)
-        # btn2.clicked.connect(self.buttonClicked)
+        self.editbutton.clicked.connect(self.edit_customnetwork_action)
         self.deletebutton.clicked.connect(self.delete_action)
 
         vertical_layout.addWidget(newbutton)
@@ -198,14 +196,27 @@ class ContainerWidget(QWidget):
 
     def new_customnetwork_action(self):
         log.debug("new custom network action event")
-        name, description, tickets ,ok = \
-            dialogs.CreateCustomNetworkDialog.getData(self)
+        name, description, tickets, ok = \
+            dialogs.CustomNetworkFormDialog.getData(self)
         if ok:
-            self.cnview.cnmodel.create(name,description)
+            customnetwork_id = self.cnview.cnmodel.create(name, description)
+            self.cncview.cnmodel.create(customnetwork_id, tickets)
+
+    def edit_customnetwork_action(self):
+        log.debug("edit custom network action event")
+        customnetwork_id = self.cnview.get_selected_custom_network()
+        name, description, components, ok = \
+            dialogs.CustomNetworkFormDialog.getData(self, customnetwork_id)
+        if ok:
+            # FIXME : tienes que editar
+            ok = self.cnview.cnmodel.update(customnetwork_id,
+                                            name, description)
+            self.cncview.cnmodel.update_components(customnetwork_id,
+                                                   components)
 
     def delete_action(self):
-        log.debug("delete custom network action event")
         self.cnview.remove()
+
 
 def startapp():
     app = QApplication(sys.argv)

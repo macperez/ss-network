@@ -21,6 +21,7 @@ def create_tables():
     query.exec_("insert into sector values(1, 'HealthCare', 'Salud')")
     query.exec_("insert into sector values(2, 'Energy', 'Energía')")
     query.exec_("insert into sector values(3, 'Bank', 'Banca')")
+    query.exec_("insert into sector values(1000, 'Generic', 'Genérico')")
 
     query.exec_("create table component(id int primary key,"
                 "ticket varchar(10) NOT NULL, description varchar(80),"
@@ -33,7 +34,7 @@ def create_tables():
     query.exec_("create table customnetwork(id int primary key, "
                 "name varchar(50) NOT NULL, description varchar(150))")
     query.exec_("insert into customnetwork values "
-                "(1, 'IBEX35', 'Primer ejemplo')")
+                    "(1, 'IBEX35', 'Primer ejemplo')")
     query.exec_("insert into customnetwork values "
                 "(2, 'CAC', 'Segundo ejemplo')")
 

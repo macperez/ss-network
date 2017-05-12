@@ -10,7 +10,8 @@ created: May 3,  2017
 
 import logging
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableView, QHeaderView, QAbstractItemView
+from PyQt5.QtWidgets import QTableView, QHeaderView, QAbstractItemView, \
+                            QMessageBox
 from PyQt5.QtSql import QSqlRelationalDelegate
 
 from gui import models
@@ -45,7 +46,7 @@ class CustomNetworkView(ApplicationTableView):
         self.view.doubleClicked.connect(self.manageDoubleClick)
         self._formatTable()
         self.dependantView = parent.cncview
-        self.customnetwork_row_selected = -1
+        self.customnetwork_id_selected = -1
         super().__init__(self.view)
 
     def _formatTable(self):
@@ -70,11 +71,22 @@ class CustomNetworkView(ApplicationTableView):
             dependant_model.setFilter("customnetwork_id={}".format(cn_id))
 
             self.parent.connection.close()
-            self.customnetwork_row_selected = rowidx
+            self.customnetwork_id_selected = cn_id
 
     def remove(self):
-        self.cnmodel.getModel().removeRows(self.customnetwork_row_selected, 1)
+        reply = QMessageBox.question(self.parent, 'Delete custom network',
+            "Are you sure to remove?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
+        if reply == QMessageBox.Yes:
+            log.debug("The {} customnetwork is going to be deleted" \
+                .format(self.customnetwork_id_selected))
+
+            ok = self.parent.cncview.cnmodel.delete_cnc(self.customnetwork_id_selected)
+            if ok:
+                self.cnmodel.delete_cn(self.customnetwork_id_selected)
+
+    def get_selected_custom_network(self):
+        return self.customnetwork_id_selected
 
 class CustomNetworkComponentView(ApplicationTableView):
 

@@ -5,141 +5,127 @@ import datetime as dt
 from PyQt5.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QGridLayout, QGroupBox,
                              QHBoxLayout, QLabel, QLineEdit,
-                             QSpinBox, QTextEdit,QScrollArea,
-                             QVBoxLayout, QWidget, QStyle)
+                             QSpinBox, QTextEdit, QVBoxLayout,
+                             QWidget, QStyle)
 
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QRegExpValidator, QValidator
 from PyQt5 import QtSql
 
+from gui.models import CustomNetwork
+
+
 log = logging.getLogger('simpleDevelopment')
 
+CREATION, EDITION, READ = 0, 1, 2
 
-class CustomNetworkNameValidator(QValidator):
+
+class CustomNetworkNameValidator():
     def __init__(self, connection):
         self.connection = connection
-        super().__init__()
 
-    def validate(self, text, position):
-        log.debug("Trying to validate query")
-        self.connection.open()
-        query = QtSql.QSqlQuery('select id from customnetwork where '
-                                'name = "{}"'.format(text))
+    def validate(self, text, mode=CREATION):
+        if text is None or text == '':
+            return QValidator.Invalid, 'The field cannot be empty'
 
-        if query.size() > 0 or text == '_INCORRECT_':
-            result = QValidator.Invalid, text, position
+        if mode == CREATION:
+            self.connection.open()
+            query = QtSql.QSqlQuery()
+            text_query = 'select id from customnetwork where name = "{}";' \
+                .format(text)
+            query.exec_(text_query)
+            if query.next():
+                result = QValidator.Invalid, 'This name alreay exists'
+            else:
+                log.debug("Valid name {}".format(text))
+                result = QValidator.Acceptable, 'ok'
+
+            self.connection.close()
         else:
-            log.debug("Valid name {}".format(text))
-            result = QValidator.Acceptable, text, position
-
-        self.connection.close()
-
+            result = QValidator.Acceptable, 'ok'
         return result
 
 
-class CreateCustomNetworkDialog(QDialog):
+class CustomNetworkFormDialog(QDialog):
     NumGridRows = 3
     NumButtons = 4
 
-    def __init__(self, parent):
-        super(CreateCustomNetworkDialog, self).__init__(parent)
+    def __init__(self, parent, customnetwork_id):
+        super().__init__(parent)
         self.parent = parent
+        self.object = CustomNetwork.getObject(parent.connection, customnetwork_id)
+
         self.createFormGroupBox()
-        log.debug("Opening dialog")
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
-                                     QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
+                                          QDialogButtonBox.Cancel)
+
+        self.buttonBox.accepted.connect(self.accepting)
+        self.buttonBox.rejected.connect(self.reject)
 
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.formGroupBox)
-        mainLayout.addWidget(buttonBox)
+        mainLayout.addWidget(self.buttonBox)
         self.setLayout(mainLayout)
         self.setWindowTitle("New CustomNetwork Form")
 
-
     def createFormGroupBox(self):
         self.formGroupBox = QGroupBox("Data:")
-        self.name = QLineEdit()
-        self.description = QLineEdit()
-        self.tickets = QTextEdit()
+        self.name = QLineEdit(self.object.get('name', ''))
+        self.description = QLineEdit(self.object.get('description', ''))
+        if 'components' in self.object and len(self.object['components']) > 0:
+            tickets_text = \
+                ' '.join([comp['ticket']
+                         for comp in self.object['components']])
+        else:
+            tickets_text = ''
 
-        # reg_ex = QRegExp("[0-9]+.?[0-9]{,2}")
-        # input_validator = QRegExpValidator(reg_ex, self.name)
-        self.name.setValidator(CustomNetworkNameValidator(
-                               self.parent.connection))
+        self.tickets = QTextEdit(tickets_text)
 
         self.name.setPlaceholderText('Enter a name')
         self.name.textChanged.connect(self.check_state)
-
         layout = QFormLayout()
         layout.addRow(QLabel("Name:"), self.name)
         layout.addRow(QLabel("Description:"), self.description)
         layout.addRow(QLabel("Tickets:"), self.tickets)
         self.formGroupBox.setLayout(layout)
 
-    def check_state(self, event):
-        sender = self.sender()
-        validator = sender.validator()
-        state = validator.validate(sender.text(), 0)[0]
-        # FIXME: esto no está funcionando
-        if state == QValidator.Acceptable:
-            log.debug(state)
-            color = 'white' # green
-        elif state == QValidator.Intermediate:
-            color = '#fff79a' # yellow
+    def accepting(self):
+        # TODO: La validación del resto de campos falta.
+        ok_button = self.buttonBox.buttons()[0]
+        validator = CustomNetworkNameValidator(self.parent.connection)
+        if len(self.object) > 0:
+            state = validator.validate(self.name.text(), EDITION)[0]
         else:
-            log.debug(state)
-            color = '#f6989d' # red
+            state = validator.validate(self.name.text(), CREATION)[0]
 
-        sender.setStyleSheet("background-color: {};".format(color))
-    # static method to create the dialog and return (date, time, accepted)
+        if state == QValidator.Acceptable:
+            color = 'white'
+            ok_button.setEnabled(True)
+        else:
+            color = '#f6989d'  # red
+            ok_button.setEnabled(False)
+        self.name.setStyleSheet("background-color: {};".format(color))
+        if state == QValidator.Acceptable:
+            self.done(QDialog.Accepted)
+
+
+    def check_state(self, event):
+        ok_button = self.buttonBox.buttons()[0]
+        self.name.setStyleSheet("background-color: white;")
+        ok_button.setEnabled(True)
+    #  static method to create the dialog and return (date, time, accepted)
+
     @staticmethod
-    def getData(parent=None):
+    def getData(parent=None, customnetwork_id=-1):
 
-        dialog = CreateCustomNetworkDialog(parent)
+        dialog = CustomNetworkFormDialog(parent, customnetwork_id)
         result = dialog.exec_()
+        tickets = dialog.tickets.toPlainText().split()
+        # TODO: aquí necesita validación extra, no sólo un simple split()
         return (dialog.name.text(),
                 dialog.description.text(),
-                dialog.tickets.toPlainText(),
+                tickets,
                 result == QDialog.Accepted)
-
-
-
-class Example(QWidget):
-
-    def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
-
-        self.initUI()
-
-    def initUI(self):
-
-        title = QLabel('Title')
-        author = QLabel('Author')
-        review = QLabel('Review')
-
-        titleEdit = QLineEdit()
-        authorEdit = QLineEdit()
-        reviewEdit = QTextEdit()
-
-        grid = QGridLayout()
-        grid.setSpacing(10)
-
-        grid.addWidget(title, 1, 0)
-        grid.addWidget(titleEdit, 1, 1)
-
-        grid.addWidget(author, 2, 0)
-        grid.addWidget(authorEdit, 2, 1)
-
-        grid.addWidget(review, 3, 0)
-        grid.addWidget(reviewEdit, 3, 1, 5, 1)
-
-        self.setLayout(grid)
-
-        self.setGeometry(300, 300, 350, 300)
-        self.setWindowTitle('Review')
 
 
 if __name__ == '__main__':
