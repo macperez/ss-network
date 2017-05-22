@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.containerWidget)
         self.resize(900, 500)
         self.__center()
-        self.setWindowTitle('Open Graph Network Tool')
+        self.setWindowTitle('Open Graph network Tool')
         self.show()
         self.connection.close()
 

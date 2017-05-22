@@ -3,7 +3,7 @@ This is the start point of the application. From here we invoke several
 modules in order to get out the functionality
 
 @author: Manuel Castro
-@email: manuel.ant.castro@gmail.com
+@email: manuel.ant.castro@gmail
 
 """
 import os
