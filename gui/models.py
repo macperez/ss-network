@@ -31,8 +31,7 @@ class CustomNetwork(object):
         last = self.model.rowCount()
         id = last + 1
         self.connection.open()
-        query_str = "insert into customnetwork values ({}, '{}', '{}');"\
-            .format(id, name, description)
+        query_str = """INSERT INTO customnetwork VALUES ({}, '{}', '{}');""".format(id, name, description)
         log.debug("Query: {}".format(query_str))
         query.exec_(query_str)
         self.model.select()

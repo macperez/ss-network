@@ -23,6 +23,13 @@ y cómo construir el proyecto.
 ```
 pip install -r requirements.txt
 ```
+
+Para windows tenemos que tener instalados varios programas previamente
+Para poder compilar pygraphviz e instalarlo
+con pip.
+Así que el orden para windows es 
+[Instalar visualcppbuildtool](http://landinghub.visualstudio.com/visual-cpp-build-tools)
+
 ### Ejecución de los tests unitarios ###
 Para ejecutar los test se pueden ejecutar de la siguiente manera si es a nivel de clase
 
