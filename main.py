@@ -3,7 +3,7 @@ This is the start point of the application. From here we invoke several
 modules in order to get out the functionality
 
 @author: Manuel Castro
-@email: desarrollo@institutoibt.come
+@email: manuel.ant.castro@gmail.com
 
 """
 import os
@@ -50,6 +50,7 @@ def main():
     # # paint(close_data_frame_IBEX, correlation_means, correlation_std)
 
     # paint_network(tree, close_data_frame.columns.tolist())
+
 
 if __name__ == '__main__':
     main()

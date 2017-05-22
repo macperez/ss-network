@@ -5,7 +5,6 @@
 Skeleton of the application
 
 author: Manuel Antonio Castro
-website: www.institutoibt.com
 last edited: March 31,  2017
 """
 import os
@@ -66,7 +65,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.containerWidget)
         self.resize(900, 500)
         self.__center()
-        self.setWindowTitle('Scientia Network Tool')
+        self.setWindowTitle('Open Graph Network Tool')
         self.show()
         self.connection.close()
 

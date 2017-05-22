@@ -2,7 +2,7 @@
 A collection of Minimal spawn tree algorithms implemented in Python
 
 @author: Manuel Castro
-@email: desarrollo@institutoibt.come
+@email: manuel.ant.castro@gmail.com
 
 """
 import numpy as np

@@ -53,8 +53,8 @@ class CustomNetworkFormDialog(QDialog):
     def __init__(self, parent, customnetwork_id):
         super().__init__(parent)
         self.parent = parent
-        self.object = CustomNetwork.getObject(parent.connection, customnetwork_id)
-
+        self.object = CustomNetwork.getObject(parent.connection,
+                                              customnetwork_id)
         self.createFormGroupBox()
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
                                           QDialogButtonBox.Cancel)
