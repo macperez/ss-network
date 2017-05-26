@@ -27,36 +27,36 @@ class CustomNetworkValidator(forms.FormValidator):
 
     def validate(self, form, mode=CREATION):
         super().validate(form, mode)
-        isOk = QValidator.Acceptable
-        # TODO: hacer la validacion ahora
+        isOk = True
+
         name = form.fields['name']
-        if name.text() == "" or not name.text():
-            name.setValid(False)
-            name.setErrorMessage('This field cannot be empty')
-        return 0, 1
+        if name.is_valid:
+            isOk &= True
 
-    def _validate(self, field, mode=CREATION):
-        text = field.text()
-        if text is None or text == '':
-            field.setValid(False)
-            return QValidator.Invalid, 'The field cannot be empty'
-
-        if mode == CREATION:
-            self.connection.open()
-            query = QtSql.QSqlQuery()
-            text_query = 'select id from customnetwork where name = "{}";' \
-                .format(text)
-            query.exec_(text_query)
-            if query.next():
-                result = QValidator.Invalid, 'This name alreay exists'
-            else:
-                log.debug("Valid name {}".format(text))
-                result = QValidator.Acceptable, 'ok'
-
-            self.connection.close()
+        self.connection.open()
+        query = QtSql.QSqlQuery()
+        text_query = 'select id from customnetwork where name = "{}";' \
+            .format(name.text())
+        query.exec_(text_query)
+        if query.next():
+            isOk &= False
+            # name.setErrorMessage('This name already exists')
+            name.setValid(False, 'This name already exists')
         else:
-            result = QValidator.Acceptable, 'ok'
-        return result
+            log.debug("Valid name {}".format(name.text()))
+            name.setValid(True)
+            isOk &= True
+            # isOk = QValidator.Acceptable
+
+        # QValidator.Invalid
+        self.connection.close()
+
+        if isOk:
+            val = QValidator.Acceptable
+        else:
+            val = QValidator.Invalid
+
+        return val
 
 
 class CustomNetworkFormDialog(QDialog, forms.FormMixing):
@@ -68,7 +68,7 @@ class CustomNetworkFormDialog(QDialog, forms.FormMixing):
         self.parent = parent
         self.object = CustomNetwork.getObject(parent.connection,
                                               customnetwork_id)
-        self.createFormGroupBox()
+        self._createFormGroupBox()
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
                                           QDialogButtonBox.Cancel)
 
@@ -82,11 +82,18 @@ class CustomNetworkFormDialog(QDialog, forms.FormMixing):
         self.setLayout(mainLayout)
         self.setWindowTitle("New CustomNetwork Form")
 
-    def createFormGroupBox(self):
+    def _createFormGroupBox(self):
         self.formGroupBox = QGroupBox("Data:")
-        # self.name = QLineEdit(self.object.get('name', ''))
         self.name = forms.TextField(self.object.get('name', ''))
-        self.description = forms.TextField(self.object.get('description', ''))
+        self.description = forms.TextField(self.object.get('description', ''),
+                                           not_null=False)
+
+        # self.name.focusOutEvent.connect(self.buttonClicked)
+        # self.description.clicked.connect(self.buttonClicked)
+        self.name.communicate.changeValidationStatus.connect(self.check_state)
+        self.description.communicate.changeValidationStatus.\
+            connect(self.check_state)
+
         if 'components' in self.object and len(self.object['components']) > 0:
             tickets_text = \
                 ' '.join([comp['ticket']
@@ -95,9 +102,8 @@ class CustomNetworkFormDialog(QDialog, forms.FormMixing):
             tickets_text = ''
 
         self.tickets = QTextEdit(tickets_text)
-
         self.name.setPlaceholderText('Enter a name')
-        # self.name.textChanged.connect(self.check_state)
+
         layout = QFormLayout()
         layout.addRow(QLabel("Name:"), self.name)
         layout.addRow(QLabel("Description:"), self.description)
@@ -120,12 +126,13 @@ class CustomNetworkFormDialog(QDialog, forms.FormMixing):
         if state == QValidator.Acceptable:
             self.done(QDialog.Accepted)
 
-    def check_state(self, event):
-        ok_button = self.buttonBox.buttons()[0]
-        self.name.setStyleSheet("background-color: white;")
-        ok_button.setEnabled(True)
-    #  static method to create the dialog and return (date, time, accepted)
+    def check_state(self, val):
+        # ok_button = self.buttonBox.buttons()[0]
+        print(">> Check state {}".format(val))
 
+        # ok_button.setEnabled(True)
+
+    #  static method to create the dialog and return (date, time, accepted)
     @staticmethod
     def getData(parent=None, customnetwork_id=-1):
 

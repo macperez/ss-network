@@ -16,16 +16,17 @@ matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 
 
-def paint (close_data_frame_IBEX, correlation_means, correlation_std):
-    plt.figure(figsize=(20,10))
-    plt.subplot(3,1,1)
-    plt.title('Ibex35',fontsize = 28, color = '0', verticalalignment = 'baseline', horizontalalignment = 'center')
+def paint(close_data_frame_IBEX, correlation_means, correlation_std):
+    plt.figure(figsize=(20, 10))
+    plt.subplot(3, 1, 1)
+    plt.title('Ibex35', fontsize=28, color='0', verticalalignment='baseline',
+              horizontalalignment='center')
     plt.plot(close_data_frame_IBEX)
     plt.ylabel('Index value')
-    plt.subplot(3,1,2)
+    plt.subplot(3, 1, 2)
     plt.plot(correlation_means)
     plt.ylabel('Mean correlation')
-    plt.subplot(3,1,3)
+    plt.subplot(3, 1, 3)
     plt.plot(correlation_std)
     plt.ylabel('Correlation deviation')
     plt.show()
