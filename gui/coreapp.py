@@ -61,6 +61,8 @@ class MainWindow(QMainWindow):
         self.statusBar()  # La primera llamada lo crea, las siguientes
         self.toolbar = self.addToolBar('Exit')
         self.toolbar.addAction(self.exitAction)
+        self.toolbar.addAction(self.calculateNetworkAction)
+        self.toolbar.addAction(self.exportNetworkAction)
         self.containerWidget = ContainerWidget(self)
         self.setCentralWidget(self.containerWidget)
         self.resize(900, 500)
@@ -68,6 +70,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Open Graph network Tool')
         self.show()
         self.connection.close()
+        # self.customnetwork_id_selected = None
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Message',
@@ -94,6 +97,19 @@ class MainWindow(QMainWindow):
             self.yahoo_connector_action.setStatusTip('Yahoo connection')
             self.yahoo_connector_action.triggered.\
                 connect(self.__yahoo_connector)
+
+        self.calculateNetworkAction = \
+            QAction(QIcon('gui/images/calculation24.png'), 'Compute Network', self)
+        self.calculateNetworkAction.setShortcut('Ctrl+C')
+        self.calculateNetworkAction.setStatusTip('Compute Network')
+        self.calculateNetworkAction.triggered.connect(self.computeNetworkSlot)
+        self.calculateNetworkAction.setEnabled(False)
+        self.exportNetworkAction = \
+            QAction(QIcon('gui/images/export24.png'), 'Export Network', self)
+        self.exportNetworkAction.setShortcut('Ctrl+X')
+        self.exportNetworkAction.setStatusTip('Export Network')
+        self.exportNetworkAction.triggered.connect(self.exportNetworkSlot)
+        self.exportNetworkAction.setEnabled(False)
 
     def __yahoo_connector(self):
         '''
@@ -123,6 +139,11 @@ class MainWindow(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
+    def computeNetworkSlot(self, event):
+        pass
+
+    def exportNetworkSlot(self, event):
+        pass
 
 class ContainerWidget(QWidget):
     '''
@@ -199,7 +220,6 @@ class ContainerWidget(QWidget):
         name, description, components, ok = \
             dialogs.CustomNetworkFormDialog.getData(self, customnetwork_id)
         if ok:
-            # FIXME : tienes que editar
             ok = self.cnview.cnmodel.update(customnetwork_id,
                                             name, description)
             self.cncview.cnmodel.update_components(customnetwork_id,

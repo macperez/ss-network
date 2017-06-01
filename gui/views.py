@@ -72,21 +72,26 @@ class CustomNetworkView(ApplicationTableView):
 
             self.parent.connection.close()
             self.customnetwork_id_selected = cn_id
+            # self.parent.parent.customnetwork_id_selected = cn_id
+            self.parent.parent.calculateNetworkAction.setEnabled(True)
 
     def remove(self):
         reply = QMessageBox.question(self.parent, 'Delete custom network',
-            "Are you sure to remove?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                                     "Are you sure to remove?", QMessageBox.Yes
+                                     | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
-            log.debug("The {} customnetwork is going to be deleted" \
-                .format(self.customnetwork_id_selected))
+            log.debug("The {} customnetwork is going to be deleted"
+                      .format(self.customnetwork_id_selected))
 
-            ok = self.parent.cncview.cnmodel.delete_cnc(self.customnetwork_id_selected)
+            ok = self.parent.cncview.cnmodel.\
+                delete_cnc(self.customnetwork_id_selected)
             if ok:
                 self.cnmodel.delete_cn(self.customnetwork_id_selected)
 
     def get_selected_custom_network(self):
         return self.customnetwork_id_selected
+
 
 class CustomNetworkComponentView(ApplicationTableView):
 
