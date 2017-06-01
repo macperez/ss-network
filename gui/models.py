@@ -103,7 +103,6 @@ class CustomNetwork(object):
         return cnc_object
 
 
-
 class Components(object):
 
     def __init__(self, connection):
@@ -205,3 +204,34 @@ class Components(object):
         self.model.select()
         self.connection.close()
         return ok
+
+
+class NetWorkParameters(object):
+    def __init__(self, connection):
+        self.connection = connection
+
+    @staticmethod
+    def getObject(connection, customnetwork_id=-1):
+        if customnetwork_id < 0:
+            return {}
+        cnc_object = {}
+        query = QSqlQuery()
+        connection.open()
+        query_str = """SELECT id, step, historical, start_date, end_date
+        FROM networkpreferences
+        WHERE
+        customnetwork_id = ?;
+        """
+        log.debug("QUERY: {}".format(query_str))
+        query.prepare(query_str)
+        query.addBindValue(customnetwork_id)
+        if query.exec_():
+            query.next()
+            cnc_object['id'] = int(query.value(0))
+            cnc_object['step'] = str(query.value(1))
+            cnc_object['historical'] = str(query.value(2))
+            cnc_object['start_date'] = str(query.value(3))
+            cnc_object['end_date'] = str(query.value(4))
+        connection.close()
+
+        return cnc_object

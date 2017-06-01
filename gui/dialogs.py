@@ -6,14 +6,14 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QGridLayout, QGroupBox,
                              QHBoxLayout, QLabel, QLineEdit,
                              QSpinBox, QTextEdit, QVBoxLayout,
-                             QWidget, QStyle)
+                             QWidget, QStyle, QLCDNumber, QSlider)
 
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QRegExpValidator, QValidator
 from PyQt5 import QtSql
 
 from core import forms
-from gui.models import CustomNetwork
+from gui.models import CustomNetwork, NetWorkParameters
 
 
 log = logging.getLogger('simpleDevelopment')
@@ -35,7 +35,6 @@ class CustomNetworkValidator(forms.FormValidator):
         query.exec_(text_query)
         if query.next():
             isOk &= False
-            # name.setErrorMessage('This name already exists')
             name.setValid(False, 'This name already exists')
         else:
             log.debug("Valid name {}".format(name.text()))
@@ -80,8 +79,8 @@ class CustomNetworkValidator(forms.FormValidator):
 
 
 class CustomNetworkFormDialog(QDialog, forms.FormMixing):
-    NumGridRows = 3
-    NumButtons = 4
+    # NumGridRows = 3
+    # NumButtons = 4
 
     def __init__(self, parent, customnetwork_id):
         super().__init__(parent)
@@ -108,11 +107,7 @@ class CustomNetworkFormDialog(QDialog, forms.FormMixing):
         self.description = forms.TextField(self.object.get('description', ''),
                                            not_null=False)
 
-        # self.name.focusOutEvent.connect(self.buttonClicked)
-        # self.description.clicked.connect(self.buttonClicked)
         self.name.communicate.changeValidationStatus.connect(self.check_state)
-        # self.description.communicate.changeValidationStatus.\
-        #     connect(self.check_state)
 
         if 'components' in self.object and len(self.object['components']) > 0:
             tickets_text = \
@@ -158,7 +153,85 @@ class CustomNetworkFormDialog(QDialog, forms.FormMixing):
         dialog = CustomNetworkFormDialog(parent, customnetwork_id)
         result = dialog.exec_()
         tickets = dialog.tickets.toPlainText().split()
-        # TODO: aquí necesita validación extra, no sólo un simple split()
+        return (dialog.name.text(),
+                dialog.description.text(),
+                tickets,
+                result == QDialog.Accepted)
+
+
+class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
+    NumGridRows = 3
+    NumButtons = 4
+
+    def __init__(self, parent, customnetwork_id):
+        super().__init__(parent)
+        self.parent = parent
+        self.object = NetWorkParameters.getObject(parent.connection,
+                                                  customnetwork_id)
+
+        self._createDateGroupBox()
+        # self._createSplinnersGroupBox()
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
+                                          QDialogButtonBox.Cancel)
+
+        self.buttonBox.accepted.connect(self.accepting)
+        self.buttonBox.rejected.connect(self.reject)
+
+        mainLayout = QVBoxLayout()
+        mainLayout.addWidget(self.formGroupBox)
+        mainLayout.addWidget(self.buttonBox)
+
+        self.setLayout(mainLayout)
+        self.setWindowTitle("New CustomNetwork Form")
+
+    def _createDateGroupBox(self):
+        self.formGroupBox = QGroupBox("Date:")
+        self.start_date = forms.TextField(self.object.get('start_date', ''))
+        self.end_date = forms.TextField(self.object.get('end_date', ''))
+
+        layout = QFormLayout()
+        layout.addRow(QLabel("Start date:"), self.start_date)
+        layout.addRow(QLabel("End date:"), self.end_date)
+        self.formGroupBox.setLayout(layout)
+
+    def _createSplinnersGroupBox(self):
+        self.lcd = QLCDNumber(self)
+        sld = QSlider(Qt.Horizontal, self)
+        # vbox = QVBoxLayout()
+        # vbox.addWidget(lcd)
+        # vbox.addWidget(sld)
+        #
+        # self.setLayout(vbox)
+        sld.valueChanged.connect(self.lcd.display)
+
+    def accepting(self):
+        ok_button = self.buttonBox.buttons()[0]
+        validator = CustomNetworkValidator(self.parent.connection)
+        if len(self.object) > 0:
+            state = validator.validate(self, EDITION)
+        else:
+            state = validator.validate(self, CREATION)
+
+        if state == QValidator.Acceptable:
+            ok_button.setEnabled(True)
+        else:
+            ok_button.setEnabled(False)
+
+        if state == QValidator.Acceptable:
+            self.done(QDialog.Accepted)
+
+    def check_state(self, val):
+
+        ok_button = self.buttonBox.buttons()[0]
+        ok_button.setEnabled(val)
+
+    #  static method to create the dialog and return (date, time, accepted)
+    @staticmethod
+    def getData(parent=None, customnetwork_id=-1):
+
+        dialog = NetWorkParametersFormDialog(parent, customnetwork_id)
+        result = dialog.exec_()
+
         return (dialog.name.text(),
                 dialog.description.text(),
                 tickets,

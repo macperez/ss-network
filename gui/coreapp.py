@@ -140,10 +140,15 @@ class MainWindow(QMainWindow):
         self.move(qr.topLeft())
 
     def computeNetworkSlot(self, event):
-        pass
+        log.debug("Opening network building preferences")
+        name, description, tickets, ok = \
+            dialogs.NetWorkParametersFormDialog.getData(self)
+        if ok:
+            log.debug("Opening network building preferences")
 
     def exportNetworkSlot(self, event):
         pass
+
 
 class ContainerWidget(QWidget):
     '''

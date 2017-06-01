@@ -43,6 +43,11 @@ def create_tables():
                 "customnetwork_id int not null references customnetwork(id),"
                 "primary key (component_id, customnetwork_id))")
 
+    query.exec_("create table networkpreferences(id int primary key, "
+                "step int NOT NULL, historical int, "
+                "start_date text, end_date text, "
+                "customnetwork_id int not null references customnetwork(id))")
+
 
 def delete_database():
     try:
