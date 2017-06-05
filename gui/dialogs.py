@@ -2,13 +2,14 @@ import logging
 import sys
 import datetime as dt
 
+
 from PyQt5.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QGridLayout, QGroupBox,
                              QHBoxLayout, QLabel, QLineEdit,
                              QSpinBox, QTextEdit, QVBoxLayout,
                              QWidget, QStyle, QLCDNumber, QSlider)
 
-from PyQt5.QtCore import QRegExp
+from PyQt5.QtCore import QRegExp, Qt
 from PyQt5.QtGui import QRegExpValidator, QValidator
 from PyQt5 import QtSql
 
@@ -160,8 +161,6 @@ class CustomNetworkFormDialog(QDialog, forms.FormMixing):
 
 
 class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
-    NumGridRows = 3
-    NumButtons = 4
 
     def __init__(self, parent, customnetwork_id):
         super().__init__(parent)
@@ -169,8 +168,8 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
         self.object = NetWorkParameters.getObject(parent.connection,
                                                   customnetwork_id)
 
-        self._createDateGroupBox()
-        # self._createSplinnersGroupBox()
+        splinnersGroupBox = self._createSplinnersGroupBox()
+        dateGroupBox = self._createDateGroupBox()
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
                                           QDialogButtonBox.Cancel)
 
@@ -178,31 +177,52 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
         self.buttonBox.rejected.connect(self.reject)
 
         mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.formGroupBox)
+        mainLayout.addWidget(splinnersGroupBox)
+        mainLayout.addWidget(dateGroupBox)
         mainLayout.addWidget(self.buttonBox)
 
         self.setLayout(mainLayout)
         self.setWindowTitle("New CustomNetwork Form")
 
     def _createDateGroupBox(self):
-        self.formGroupBox = QGroupBox("Date:")
+        dateGroupBox = QGroupBox("Date:")
         self.start_date = forms.TextField(self.object.get('start_date', ''))
         self.end_date = forms.TextField(self.object.get('end_date', ''))
 
         layout = QFormLayout()
         layout.addRow(QLabel("Start date:"), self.start_date)
         layout.addRow(QLabel("End date:"), self.end_date)
-        self.formGroupBox.setLayout(layout)
+        dateGroupBox.setLayout(layout)
+        return dateGroupBox
 
     def _createSplinnersGroupBox(self):
-        self.lcd = QLCDNumber(self)
-        sld = QSlider(Qt.Horizontal, self)
-        # vbox = QVBoxLayout()
-        # vbox.addWidget(lcd)
-        # vbox.addWidget(sld)
-        #
-        # self.setLayout(vbox)
-        sld.valueChanged.connect(self.lcd.display)
+        splinnersGroupBox = QGroupBox("Params:")
+
+        step_lbl = QLabel("Step")
+        self.lcd_step = QLCDNumber(self)
+        sld_step = QSlider(Qt.Horizontal, self)
+        sld_step.setFocusPolicy(Qt.NoFocus)
+
+        history_lbl = QLabel("History")
+        self.lcd_history = QLCDNumber(self)
+        sld_history = QSlider(Qt.Horizontal, self)
+        sld_history.setFocusPolicy(Qt.NoFocus)
+
+        grid = QGridLayout()
+        grid.setSpacing(10)
+
+        grid.addWidget(step_lbl, 1, 0)
+        grid.addWidget(sld_step, 1, 1)
+        grid.addWidget(self.lcd_step, 1, 2)
+        grid.addWidget(history_lbl, 2, 0)
+        grid.addWidget(sld_history, 2, 1)
+        grid.addWidget(self.lcd_history, 2, 2)
+
+        splinnersGroupBox.setLayout(grid)
+        sld_step.valueChanged.connect(self.lcd_step.display)
+        sld_history.valueChanged.connect(self.lcd_history.display)
+
+        return splinnersGroupBox
 
     def accepting(self):
         ok_button = self.buttonBox.buttons()[0]
@@ -231,6 +251,7 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
 
         dialog = NetWorkParametersFormDialog(parent, customnetwork_id)
         result = dialog.exec_()
+        # FIXME:
 
         return (dialog.name.text(),
                 dialog.description.text(),
