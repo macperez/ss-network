@@ -19,6 +19,7 @@ from gui.models import CustomNetwork, NetWorkParameters
 
 log = logging.getLogger('simpleDevelopment')
 
+DATE_EXP = "([0][1-9]|[12][0-9]|3[01])(\/|-)([0][1-9]|[1][0-2])(\/|-)(\d{4})"
 CREATION, EDITION, READ = 0, 1, 2
 
 
@@ -186,9 +187,12 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
 
     def _createDateGroupBox(self):
         dateGroupBox = QGroupBox("Date:")
-        self.start_date = forms.TextField(self.object.get('start_date', ''))
-        self.end_date = forms.TextField(self.object.get('end_date', ''))
+        self.start_date = forms.TextField()
+        validator = QRegExpValidator(QRegExp(DATE_EXP))
+        self.start_date.setValidator(validator)
 
+        self.end_date = forms.TextField(self.object.get('end_date', ''))
+        self.end_date.setValidator(validator)
         layout = QFormLayout()
         layout.addRow(QLabel("Start date:"), self.start_date)
         layout.addRow(QLabel("End date:"), self.end_date)
@@ -252,10 +256,11 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
         dialog = NetWorkParametersFormDialog(parent, customnetwork_id)
         result = dialog.exec_()
         # FIXME:
-
-        return (dialog.name.text(),
-                dialog.description.text(),
-                tickets,
+        import ipdb; ipdb.set_trace()
+        return (dialog.lcd_step.value(),
+                dialog.lcd_history.value(),
+                dialog.start_date,
+                dialog.end_date,
                 result == QDialog.Accepted)
 
 

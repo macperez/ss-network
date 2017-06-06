@@ -10,6 +10,22 @@ class Communicate(QObject):
     changeValidationStatus = pyqtSignal(bool)
 
 
+class FormMixing:
+    def __init__(self):
+        self.fields = {}
+
+    def get_validable_fields(self):
+        for f in dir(self):
+            field = getattr(self, f)
+            if isinstance(field, ValidableFieldMixin):
+                self.fields[f] = field
+
+
+class FormValidator:
+    def validate(self, form, mode):
+        form.get_validable_fields()
+
+
 class TextField(QLineEdit, ValidableFieldMixin):
     def __init__(self, content='', parent=None, not_null=True):
         super().__init__(content, parent)
@@ -74,19 +90,3 @@ class TextArea(QTextEdit, ValidableFieldMixin):
 
     def check_state(self):
         self.setValid(True)
-
-
-class FormMixing:
-    def __init__(self):
-        self.fields = {}
-
-    def get_validable_fields(self):
-        for f in dir(self):
-            field = getattr(self, f)
-            if isinstance(field, ValidableFieldMixin):
-                self.fields[f] = field
-
-
-class FormValidator:
-    def validate(self, form, mode):
-        form.get_validable_fields()
