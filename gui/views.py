@@ -72,7 +72,7 @@ class CustomNetworkView(ApplicationTableView):
 
             self.parent.connection.close()
             self.customnetwork_id_selected = cn_id
-            # self.parent.parent.customnetwork_id_selected = cn_id
+            self.parent.parent.customnetwork_id_selected = cn_id
             self.parent.parent.calculateNetworkAction.setEnabled(True)
 
     def remove(self):

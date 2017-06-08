@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QWidget, QStyle, QLCDNumber, QSlider)
 
 from PyQt5.QtCore import QRegExp, Qt
-from PyQt5.QtGui import QRegExpValidator, QValidator
+from PyQt5.QtGui import QRegExpValidator, QValidator, QColor
 from PyQt5 import QtSql
 
 from core import forms
@@ -24,6 +24,63 @@ CREATION, EDITION, READ = 0, 1, 2
 
 
 class CustomNetworkValidator(forms.FormValidator):
+    def __init__(self, connection):
+        self.connection = connection
+
+    def _name_already__exists(self, name):
+        isOK = name.is_valid
+
+        self.connection.open()
+        query = QtSql.QSqlQuery()
+        text_query = 'select id from customnetwork where name = "{}";' \
+            .format(name.text())
+        query.exec_(text_query)
+        if query.next():
+            isOk &= False
+            name.setValid(False, 'This name already exists')
+        else:
+            log.debug("Valid name {}".format(name.text()))
+            name.setValid(True)
+            isOk &= True
+
+        return isOk
+
+    def validate(self, form, mode=CREATION):
+        super().validate(form, mode)
+        isOk = True
+
+        name = form.fields['name']
+
+        if mode == CREATION:
+            isOk &= _name_already__exists(name)
+
+        tickets = form.fields['tickets']
+        components = tickets.toPlainText().split()
+        checking_set = set()
+        repetead = set()
+        for ticket in components:
+            if ticket not in checking_set:
+                checking_set.add(ticket)
+            else:
+                repetead.add(ticket)
+        if len(repetead) > 0:
+            isOk = False
+            tickets.setValid(False,
+                             'The are some tickets repetead: {}'.
+                             format(' '.join(repetead)))
+
+        # QValidator.Invalid
+        self.connection.close()
+
+        if isOk:
+            val = QValidator.Acceptable
+        else:
+            val = QValidator.Invalid
+
+        return val
+
+
+class NetworkPreferenceValidator(forms.FormValidator):
     def __init__(self, connection):
         self.connection = connection
 
@@ -204,11 +261,14 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
 
         step_lbl = QLabel("Step")
         self.lcd_step = QLCDNumber(self)
+        self.lcd_step.setSegmentStyle(QLCDNumber.Flat)
+
         sld_step = QSlider(Qt.Horizontal, self)
         sld_step.setFocusPolicy(Qt.NoFocus)
 
         history_lbl = QLabel("History")
         self.lcd_history = QLCDNumber(self)
+        self.lcd_history.setSegmentStyle(QLCDNumber.Flat)
         sld_history = QSlider(Qt.Horizontal, self)
         sld_history.setFocusPolicy(Qt.NoFocus)
 
@@ -230,7 +290,7 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
 
     def accepting(self):
         ok_button = self.buttonBox.buttons()[0]
-        validator = CustomNetworkValidator(self.parent.connection)
+        validator = NetworkPreferenceValidator(self.parent)
         if len(self.object) > 0:
             state = validator.validate(self, EDITION)
         else:
@@ -256,7 +316,6 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
         dialog = NetWorkParametersFormDialog(parent, customnetwork_id)
         result = dialog.exec_()
         # FIXME:
-        import ipdb; ipdb.set_trace()
         return (dialog.lcd_step.value(),
                 dialog.lcd_history.value(),
                 dialog.start_date,

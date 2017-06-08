@@ -50,8 +50,9 @@ class MainWindow(QMainWindow):
         if not connected:
             sys.exit(1)
         self.connection = db
-
         self.initUI()
+
+        self.customnetwork_id_selected = -1
 
     def initUI(self):
 
@@ -99,7 +100,8 @@ class MainWindow(QMainWindow):
                 connect(self.__yahoo_connector)
 
         self.calculateNetworkAction = \
-            QAction(QIcon('gui/images/calculation24.png'), 'Compute Network', self)
+            QAction(QIcon('gui/images/calculation24.png'), 'Compute Network',
+                    self)
         self.calculateNetworkAction.setShortcut('Ctrl+C')
         self.calculateNetworkAction.setStatusTip('Compute Network')
         self.calculateNetworkAction.triggered.connect(self.computeNetworkSlot)
@@ -141,7 +143,7 @@ class MainWindow(QMainWindow):
 
     def computeNetworkSlot(self, event):
         log.debug("Opening network building preferences")
-        name, description, tickets, ok = \
+        step, history, start_date, end_date, ok = \
             dialogs.NetWorkParametersFormDialog.getData(self)
         if ok:
             log.debug("Opening network building preferences")
