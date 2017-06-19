@@ -6,9 +6,11 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QGridLayout, QGroupBox,
                              QHBoxLayout, QLabel, QLineEdit,
                              QSpinBox, QTextEdit, QVBoxLayout,
-                             QWidget, QStyle, QLCDNumber, QSlider)
+                             QWidget, QStyle, QLCDNumber,
+                             QSlider, QProgressBar, QPushButton)
 
-from PyQt5.QtCore import QRegExp, Qt
+from PyQt5.QtCore import QRegExp, Qt, QBasicTimer
+
 from PyQt5.QtGui import QRegExpValidator, QValidator, QColor
 from PyQt5 import QtSql
 
@@ -120,9 +122,7 @@ class NetworkPreferenceValidator(forms.FormValidator):
             isOk &= False
             end_date_fd.setValid(False, str(e))
 
-        if isOk and utils.cmp_dt(utils.to_dt(start_date),
-                                 utils.to_dt(end_date)) >= 0:
-
+        if isOk and utils.cmp_dt(start_date, end_date) >= 0:
             isOk &= False
             start_date.setValid(False,
                                 'The start_date cannot be greater'
@@ -264,6 +264,7 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
 
         sld_step = QSlider(Qt.Horizontal, self)
         sld_step.setFocusPolicy(Qt.NoFocus)
+        sld_step.setRange(1, 10)
 
         history_lbl = QLabel("History")
         self.lcd_history = QLCDNumber(self)
@@ -314,6 +315,56 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
                 dialog.start_date,
                 dialog.end_date,
                 result == QDialog.Accepted)
+
+
+class BackGroundTaskDialog(QDialog):
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+        self.initUI()
+
+    def initUI(self):
+
+        self.pbar = QProgressBar(self)
+        self.pbar.setGeometry(30, 40, 200, 25)
+
+        self.btn = QPushButton('Start', self)
+        self.btn.move(40, 80)
+        self.btn.clicked.connect(self.doAction)
+
+        self.timer = QBasicTimer()
+        self.step = 0
+
+        self.setGeometry(300, 300, 280, 170)
+        self.setWindowTitle('QProgressBar')
+        self.show()
+
+    def timerEvent(self, e):
+
+        if self.step >= 100:
+            self.timer.stop()
+            self.btn.setText('Finished')
+            return
+
+        self.step = self.step + 1
+        self.pbar.setValue(self.step)
+
+    def doAction(self):
+
+        if self.timer.isActive():
+            self.timer.stop()
+            self.btn.setText('Start')
+        else:
+            self.timer.start(100, self)
+            self.btn.setText('Stop')
+
+    @staticmethod
+    def open(parent=None):
+
+        dialog = BackGroundTaskDialog(parent)
+        result = dialog.exec_()
+        return True
 
 
 if __name__ == '__main__':

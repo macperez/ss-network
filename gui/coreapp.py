@@ -12,12 +12,13 @@ import sys
 import logging
 import pkgutil
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QBasicTimer
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QWidget,\
                             QApplication, QDesktopWidget, QMessageBox,\
                             QFrame, QSplitter, QHBoxLayout, QTextEdit,\
                             QVBoxLayout, QStyleFactory, QPushButton, \
-                            QHeaderView, QGridLayout
+                            QHeaderView, QGridLayout, QProgressBar
+
 
 from PyQt5.QtGui import QIcon
 
@@ -37,6 +38,10 @@ for importer, modname, ispkg in pkgutil.iter_modules(datacollector.__path__):
     if not ispkg:
         AVAILABLE_CONNECTORS[modname] = module
     log.debug("Imported {0}".format(module))
+
+
+
+
 
 
 class MainWindow(QMainWindow):
@@ -147,6 +152,7 @@ class MainWindow(QMainWindow):
             dialogs.NetWorkParametersFormDialog.getData(self)
         if ok:
             log.debug("Opening network building preferences")
+            pbb = dialogs.BackGroundTaskDialog.open(self)
 
     def exportNetworkSlot(self, event):
         pass
@@ -243,6 +249,8 @@ def startapp():
     main = MainWindow()
     sys.exit(app.exec_())
     return app
+
+
 
 
 if __name__ == '__main__':
