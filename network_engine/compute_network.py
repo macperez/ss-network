@@ -16,7 +16,6 @@ def build(df_close):
 
     end_index = df_close.shape[0] - HISTORIAL_NUMBER_OF_ROWS
 
-#    import ipdb; ipdb.set_trace()
     if STEP > end_index:
         raise ValueError('The STEP parameter must be less than {0} days'
                          .format(end_index))
@@ -36,9 +35,6 @@ def build(df_close):
         correlations.append(tree3)
         correlation_means.append(np.mean(tree3))
         correlation_std.append(np.std(tree3))
-    #    import ipdb; ipdb.set_trace()
-    # print (correlations)
-    # print (type(correlations))
 
 
 

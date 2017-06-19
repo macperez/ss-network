@@ -31,7 +31,8 @@ class CustomNetwork(object):
         last = self.model.rowCount()
         id = last + 1
         self.connection.open()
-        query_str = """INSERT INTO customnetwork VALUES ({}, '{}', '{}');""".format(id, name, description)
+        query_str = """INSERT INTO customnetwork VALUES ({}, '{}', '{}');"""\
+            .format(id, name, description)
         log.debug("Query: {}".format(query_str))
         query.exec_(query_str)
         self.model.select()
@@ -39,7 +40,7 @@ class CustomNetwork(object):
         # FIXME: hacer una query primero y construir un objeto
         return id
 
-    def update(self,id, name, description):
+    def update(self, id, name, description):
         # TODO: capturar excepciones de error que se pueden dar
         query = QSqlQuery()
         self.connection.open()
@@ -198,7 +199,9 @@ class Components(object):
     def delete_cnc(self, customnetwork_id_selected):
         query = QSqlQuery()
         self.connection.open()
-        query.prepare('delete from customnetwork_component where customnetwork_id = ?;')
+        query_str = 'delete from customnetwork_component where '
+        ' customnetwork_id = ?;'
+        query.prepare(query)
         query.addBindValue(customnetwork_id_selected)
         ok = query.exec_()
         self.model.select()
@@ -225,8 +228,7 @@ class NetWorkParameters(object):
         log.debug("QUERY: {}".format(query_str))
         query.prepare(query_str)
         query.addBindValue(customnetwork_id)
-        if query.exec_():
-            query.next()
+        if query.exec_() and query.next():
             cnc_object['id'] = int(query.value(0))
             cnc_object['step'] = str(query.value(1))
             cnc_object['historical'] = str(query.value(2))

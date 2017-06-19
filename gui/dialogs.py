@@ -2,7 +2,6 @@ import logging
 import sys
 import datetime as dt
 
-
 from PyQt5.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QFormLayout, QGridLayout, QGroupBox,
                              QHBoxLayout, QLabel, QLineEdit,
@@ -13,13 +12,13 @@ from PyQt5.QtCore import QRegExp, Qt
 from PyQt5.QtGui import QRegExpValidator, QValidator, QColor
 from PyQt5 import QtSql
 
-from core import forms
+from core import forms, utils
 from gui.models import CustomNetwork, NetWorkParameters
 
 
 log = logging.getLogger('simpleDevelopment')
 
-DATE_EXP = "([0][1-9]|[12][0-9]|3[01])(\/|-)([0][1-9]|[1][0-2])(\/|-)(\d{4})"
+
 CREATION, EDITION, READ = 0, 1, 2
 
 
@@ -105,29 +104,31 @@ class NetworkPreferenceValidator(forms.FormValidator):
     def validate(self, form, mode=CREATION):
         super().validate(form, mode)
         isOk = True
+        start_date_fd = form.fields['start_date']
+        end_date_fd = form.fields['end_date']
 
-        name = form.fields['name']
+        try:
+            start_date = utils.to_dt(start_date_fd.text())
+        except ValueError as e:
+            isOk &= False
+            start_date_fd.setValid(False, str(e))
 
-        if mode == CREATION:
-            isOk &= _name_already__exists(name)
+        try:
+            end_date = utils.to_dt(end_date_fd.text())
 
-        tickets = form.fields['tickets']
-        components = tickets.toPlainText().split()
-        checking_set = set()
-        repetead = set()
-        for ticket in components:
-            if ticket not in checking_set:
-                checking_set.add(ticket)
-            else:
-                repetead.add(ticket)
-        if len(repetead) > 0:
-            isOk = False
-            tickets.setValid(False,
-                             'The are some tickets repetead: {}'.
-                             format(' '.join(repetead)))
+        except ValueError as e:
+            isOk &= False
+            end_date_fd.setValid(False, str(e))
 
-        # QValidator.Invalid
-        self.connection.close()
+        if isOk and utils.cmp_dt(utils.to_dt(start_date),
+                                 utils.to_dt(end_date)) >= 0:
+
+            isOk &= False
+            start_date.setValid(False,
+                                'The start_date cannot be greater'
+                                ' than the end date')
+            end_date.setValid(False, 'The start_date cannot be greater'
+                                     ' than the end date')
 
         if isOk:
             val = QValidator.Acceptable
@@ -200,11 +201,6 @@ class CustomNetworkFormDialog(QDialog, forms.FormMixing):
         if state == QValidator.Acceptable:
             self.done(QDialog.Accepted)
 
-    def check_state(self, val):
-
-        ok_button = self.buttonBox.buttons()[0]
-        ok_button.setEnabled(val)
-
     #  static method to create the dialog and return (date, time, accepted)
     @staticmethod
     def getData(parent=None, customnetwork_id=-1):
@@ -220,32 +216,29 @@ class CustomNetworkFormDialog(QDialog, forms.FormMixing):
 
 class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
 
-    def __init__(self, parent, customnetwork_id):
+    def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
-        self.object = NetWorkParameters.getObject(parent.connection,
-                                                  customnetwork_id)
-
+        self.object = NetWorkParameters.\
+            getObject(parent.connection, parent.customnetwork_id_selected)
+        self.customnetwork = CustomNetwork.getObject(parent.connection)
         splinnersGroupBox = self._createSplinnersGroupBox()
         dateGroupBox = self._createDateGroupBox()
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
                                           QDialogButtonBox.Cancel)
-
         self.buttonBox.accepted.connect(self.accepting)
         self.buttonBox.rejected.connect(self.reject)
-
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(splinnersGroupBox)
         mainLayout.addWidget(dateGroupBox)
         mainLayout.addWidget(self.buttonBox)
-
         self.setLayout(mainLayout)
         self.setWindowTitle("New CustomNetwork Form")
 
     def _createDateGroupBox(self):
         dateGroupBox = QGroupBox("Date:")
         self.start_date = forms.TextField()
-        validator = QRegExpValidator(QRegExp(DATE_EXP))
+        validator = QRegExpValidator(QRegExp(utils.DATE_EXP))
         self.start_date.setValidator(validator)
 
         self.end_date = forms.TextField(self.object.get('end_date', ''))
@@ -254,6 +247,12 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
         layout.addRow(QLabel("Start date:"), self.start_date)
         layout.addRow(QLabel("End date:"), self.end_date)
         dateGroupBox.setLayout(layout)
+
+        self.start_date.communicate.\
+            changeValidationStatus.connect(self.check_state)
+        self.end_date.communicate.\
+            changeValidationStatus.connect(self.check_state)
+
         return dateGroupBox
 
     def _createSplinnersGroupBox(self):
@@ -271,7 +270,7 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
         self.lcd_history.setSegmentStyle(QLCDNumber.Flat)
         sld_history = QSlider(Qt.Horizontal, self)
         sld_history.setFocusPolicy(Qt.NoFocus)
-
+        sld_history.setRange(10, 100)
         grid = QGridLayout()
         grid.setSpacing(10)
 
@@ -304,18 +303,12 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
         if state == QValidator.Acceptable:
             self.done(QDialog.Accepted)
 
-    def check_state(self, val):
-
-        ok_button = self.buttonBox.buttons()[0]
-        ok_button.setEnabled(val)
-
     #  static method to create the dialog and return (date, time, accepted)
     @staticmethod
     def getData(parent=None, customnetwork_id=-1):
 
-        dialog = NetWorkParametersFormDialog(parent, customnetwork_id)
+        dialog = NetWorkParametersFormDialog(parent)
         result = dialog.exec_()
-        # FIXME:
         return (dialog.lcd_step.value(),
                 dialog.lcd_history.value(),
                 dialog.start_date,

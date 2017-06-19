@@ -20,6 +20,10 @@ class FormMixing:
             if isinstance(field, ValidableFieldMixin):
                 self.fields[f] = field
 
+    def check_state(self, val):
+        ok_button = self.buttonBox.buttons()[0]
+        ok_button.setEnabled(val)
+
 
 class FormValidator:
     def validate(self, form, mode):
