@@ -40,10 +40,6 @@ for importer, modname, ispkg in pkgutil.iter_modules(datacollector.__path__):
     log.debug("Imported {0}".format(module))
 
 
-
-
-
-
 class MainWindow(QMainWindow):
     '''
     The main window cointains all the execution environment.
@@ -76,7 +72,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Open Graph network Tool')
         self.show()
         self.connection.close()
-        # self.customnetwork_id_selected = None
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Message',

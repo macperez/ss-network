@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QDialogButtonBox,
                              QHBoxLayout, QLabel, QLineEdit,
                              QSpinBox, QTextEdit, QVBoxLayout,
                              QWidget, QStyle, QLCDNumber,
-                             QSlider, QProgressBar, QPushButton)
+                             QSlider, QProgressBar, QPushButton,
+                             QDesktopWidget)
 
 from PyQt5.QtCore import QRegExp, Qt, QBasicTimer
 
@@ -328,25 +329,23 @@ class BackGroundTaskDialog(QDialog):
 
         self.pbar = QProgressBar(self)
         self.pbar.setGeometry(30, 40, 200, 25)
-
-        self.btn = QPushButton('Start', self)
-        self.btn.move(40, 80)
-        self.btn.clicked.connect(self.doAction)
-
         self.timer = QBasicTimer()
         self.step = 0
-
-        self.setGeometry(300, 300, 280, 170)
+        self.resize(280, 100)
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
         self.setWindowTitle('QProgressBar')
         self.show()
+        # self.setFocusPolicy(Qt.StrongFocus)
+        self.doAction()
 
     def timerEvent(self, e):
-
         if self.step >= 100:
             self.timer.stop()
-            self.btn.setText('Finished')
-            return
-
+            self.close()
+            # return
         self.step = self.step + 1
         self.pbar.setValue(self.step)
 
@@ -354,10 +353,9 @@ class BackGroundTaskDialog(QDialog):
 
         if self.timer.isActive():
             self.timer.stop()
-            self.btn.setText('Start')
         else:
             self.timer.start(100, self)
-            self.btn.setText('Stop')
+
 
     @staticmethod
     def open(parent=None):
