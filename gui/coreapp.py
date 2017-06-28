@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
         self.connection = db
         self.initUI()
 
-        self.customnetwork_id_selected = -1
+        self.customnetwork_id = -1
 
     def initUI(self):
 
@@ -146,7 +146,20 @@ class MainWindow(QMainWindow):
         step, history, start_date, end_date, ok = \
             dialogs.NetWorkParametersFormDialog.getData(self)
         if ok:
-            log.debug("Opening network building preferences")
+            log.debug("Saving network building preferences")
+            param_loaded = models.NetWorkParameters.\
+                getObject(self.connection, self.customnetwork_id)
+            import ipdb; ipdb.set_trace()
+            new_param = models.NetWorkParameters(self.connection,
+                                                step,
+                                                history,
+                                                start_date,
+                                                end_date,
+                                                self.customnetwork_id)
+            if new_param != param_loaded:
+                new_param.save()
+
+
             pbb = dialogs.BackGroundTaskDialog.open(self)
 
     def exportNetworkSlot(self, event):
@@ -244,7 +257,6 @@ def startapp():
     main = MainWindow()
     sys.exit(app.exec_())
     return app
-
 
 
 

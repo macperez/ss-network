@@ -46,7 +46,7 @@ class CustomNetworkView(ApplicationTableView):
         self.view.doubleClicked.connect(self.manageDoubleClick)
         self._formatTable()
         self.dependantView = parent.cncview
-        self.customnetwork_id_selected = -1
+        self.customnetwork_id = -1
         super().__init__(self.view)
 
     def _formatTable(self):
@@ -71,8 +71,8 @@ class CustomNetworkView(ApplicationTableView):
             dependant_model.setFilter("customnetwork_id={}".format(cn_id))
 
             self.parent.connection.close()
-            self.customnetwork_id_selected = cn_id
-            self.parent.parent.customnetwork_id_selected = cn_id
+            self.customnetwork_id = cn_id
+            self.parent.parent.customnetwork_id = cn_id
             self.parent.parent.calculateNetworkAction.setEnabled(True)
 
     def remove(self):
@@ -82,15 +82,15 @@ class CustomNetworkView(ApplicationTableView):
 
         if reply == QMessageBox.Yes:
             log.debug("The {} customnetwork is going to be deleted"
-                      .format(self.customnetwork_id_selected))
+                      .format(self.customnetwork_id))
 
             ok = self.parent.cncview.cnmodel.\
-                delete_cnc(self.customnetwork_id_selected)
+                delete_cnc(self.customnetwork_id)
             if ok:
-                self.cnmodel.delete_cn(self.customnetwork_id_selected)
+                self.cnmodel.delete_cn(self.customnetwork_id)
 
     def get_selected_custom_network(self):
-        return self.customnetwork_id_selected
+        return self.customnetwork_id
 
 
 class CustomNetworkComponentView(ApplicationTableView):

@@ -221,7 +221,7 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
         super().__init__(parent)
         self.parent = parent
         self.object = NetWorkParameters.\
-            getObject(parent.connection, parent.customnetwork_id_selected)
+            getObject(parent.connection, parent.customnetwork_id)
         self.customnetwork = CustomNetwork.getObject(parent.connection)
         splinnersGroupBox = self._createSplinnersGroupBox()
         dateGroupBox = self._createDateGroupBox()
@@ -258,7 +258,6 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
 
     def _createSplinnersGroupBox(self):
         splinnersGroupBox = QGroupBox("Params:")
-
         step_lbl = QLabel("Step")
         self.lcd_step = QLCDNumber(self)
         self.lcd_step.setSegmentStyle(QLCDNumber.Flat)
@@ -355,7 +354,6 @@ class BackGroundTaskDialog(QDialog):
             self.timer.stop()
         else:
             self.timer.start(100, self)
-
 
     @staticmethod
     def open(parent=None):

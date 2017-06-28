@@ -56,11 +56,11 @@ class CustomNetwork(object):
         self.connection.close()
         return ok
 
-    def delete_cn(self, customnetwork_id_selected):
+    def delete_cn(self, customnetwork_id):
         query = QSqlQuery()
         self.connection.open()
         query.prepare('delete from customnetwork where id = ?;')
-        query.addBindValue(customnetwork_id_selected)
+        query.addBindValue(customnetwork_id)
         ok = query.exec_()
         self.model.select()
         self.connection.close()
@@ -196,13 +196,13 @@ class Components(object):
         self.connection.close()
         return ok
 
-    def delete_cnc(self, customnetwork_id_selected):
+    def delete_cnc(self, customnetwork_id):
         query = QSqlQuery()
         self.connection.open()
         query_str = 'delete from customnetwork_component where '
         ' customnetwork_id = ?;'
         query.prepare(query)
-        query.addBindValue(customnetwork_id_selected)
+        query.addBindValue(customnetwork_id)
         ok = query.exec_()
         self.model.select()
         self.connection.close()
@@ -212,6 +212,27 @@ class Components(object):
 class NetWorkParameters(object):
     def __init__(self, connection):
         self.connection = connection
+
+    def __init__(self, connection, step, history,
+                 start_date, end_date, customnetwork_id):
+        self.connection = connection
+        self.object = {'step': step,
+                       'history': history,
+                       'start_date': start_date,
+                       'end_date': end_date,
+                       'customnetwork_id': customnetwork_id}
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def save(self):
+        raise NotImplementedError
 
     @staticmethod
     def getObject(connection, customnetwork_id=-1):
