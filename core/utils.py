@@ -16,3 +16,16 @@ def to_dt(str_date):
 
 def cmp_dt(dateA, dateB):
     return (dateA - dateB).days
+
+
+def change_date_format(dtformatinit):
+    '''
+    We convert dd/mm/yyyy format to yyyy-mm-dd
+    '''
+    pieces = dtformatinit.split('/')
+    pieces.reverse()
+    return '-'.join(pieces)
+
+def obtain_date(date_text):
+    # start_date_txt = self.object['start_date']
+    return datetime.datetime.strptime(date_text, '%d/%m/%Y').date()

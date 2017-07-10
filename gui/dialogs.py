@@ -312,8 +312,8 @@ class NetWorkParametersFormDialog(QDialog, forms.FormMixing):
         result = dialog.exec_()
         return (dialog.lcd_step.value(),
                 dialog.lcd_history.value(),
-                dialog.start_date,
-                dialog.end_date,
+                dialog.start_date.text(),
+                dialog.end_date.text(),
                 result == QDialog.Accepted)
 
 

@@ -151,11 +151,11 @@ class MainWindow(QMainWindow):
                 getObject(self.connection, self.customnetwork_id)
             import ipdb; ipdb.set_trace()
             new_param = models.NetWorkParameters(self.connection,
-                                                step,
-                                                history,
-                                                start_date,
-                                                end_date,
-                                                self.customnetwork_id)
+                                                 step,
+                                                 history,
+                                                 start_date,
+                                                 end_date,
+                                                 self.customnetwork_id)
             if new_param != param_loaded:
                 new_param.save()
 

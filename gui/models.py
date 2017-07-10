@@ -1,8 +1,11 @@
 import logging
+import datetime
 from PyQt5.QtCore import Qt
 from PyQt5.QtSql import (QSqlQuery, QSqlRelation, QSqlRelationalDelegate,
                          QSqlRelationalTableModel, QSqlTableModel)
 from PyQt5.QtWidgets import QTableView, QHeaderView, QTreeView
+from core import utils
+
 
 log = logging.getLogger('simpleDevelopment')
 
@@ -232,7 +235,35 @@ class NetWorkParameters(object):
         return not self.__eq__(other)
 
     def save(self):
-        raise NotImplementedError
+        log.debug("Saving params")
+        self.connection.open()
+        query = QSqlQuery()
+        ok = query.exec_("SELECT id FROM networkpreferences;")
+        id = 0
+        if ok and query.next():
+            query.last()
+            last_id = int(query.value(0))
+            id = last_id + 1
+        start_date_txt = self.object['start_date']
+        end_date_txt = self.object['end_date']
+
+        step = int(self.object['step'])
+        history = int(self.object['history'])
+        customnetwork_id = int(self.object['customnetwork_id'])
+
+        query.prepare('insert into networkpreferences values (?,?,?,?,?);')
+        query.addBindValue(id)
+        query.addBindValue(step)
+        query.addBindValue(history)
+        query.addBindValue(utils.change_date_format(start_date_txt))
+        query.addBindValue(utils.change_date_format(end_date_txt))
+        query.addBindValue(customnetwork_id)
+
+        ok = query.exec_()
+        log.error(query.lastError().text())    
+
+        self.connection.close()
+        return ok
 
     @staticmethod
     def getObject(connection, customnetwork_id=-1):

@@ -45,7 +45,7 @@ def create_tables():
 
     query.exec_("create table networkpreferences(id int primary key, "
                 "step int NOT NULL, historical int, "
-                "start_date text, end_date text, "
+                "start_date TEXT, end_date TEXT, "
                 "customnetwork_id int not null references customnetwork(id))")
 
 
