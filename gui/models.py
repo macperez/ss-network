@@ -251,7 +251,7 @@ class NetWorkParameters(object):
         history = int(self.object['history'])
         customnetwork_id = int(self.object['customnetwork_id'])
 
-        query.prepare('insert into networkpreferences values (?,?,?,?,?);')
+        query.prepare('INSERT INTO networkpreferences VALUES (?,?,?,?,?);')
         query.addBindValue(id)
         query.addBindValue(step)
         query.addBindValue(history)
@@ -260,7 +260,7 @@ class NetWorkParameters(object):
         query.addBindValue(customnetwork_id)
 
         ok = query.exec_()
-        log.error(query.lastError().text())    
+        log.error(query.lastError().text())
 
         self.connection.close()
         return ok
