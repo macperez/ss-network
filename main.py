@@ -14,7 +14,7 @@ import argparse
 
 from network_engine import compute_network
 from datacollector.yahoo_finance import YahooConnector
-from gui.nonrealplotting import paint
+# from gui.nonrealplotting import paint
 from gui import coreapp, connection
 
 import logging.config

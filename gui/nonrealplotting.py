@@ -11,9 +11,6 @@ import pandas as pd
 import numpy as np
 import networkx as nx
 
-import matplotlib
-matplotlib.use('Qt5Agg')
-import matplotlib.pyplot as plt
 
 
 def paint(close_data_frame_IBEX, correlation_means, correlation_std):
