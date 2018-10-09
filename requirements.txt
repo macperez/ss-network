@@ -31,7 +31,7 @@ simplejson==3.10.0
 sip==4.19.2
 six==1.10.0
 tables==3.3.0
-tablib==0.11.4
+tablib==0.11.5
 traitlets==4.3.2
 wcwidth==0.1.7
 yahoo-finance==1.4.0
